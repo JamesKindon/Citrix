@@ -21,6 +21,9 @@ Customise the ProcsAndWaits Hash table with your executables and timesouts
     'C:\Program Files\Internet Explorer\iexplore.exe' = 3
     'C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe' = 3
     'C:\Program Files\Microsoft Office\root\Office16\POWERPNT.EXE' = 5
+    'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE' = 5
+    'C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE' = 5
+    'C:\Program Files\Microsoft Office\root\Office16\VISIO.EXE' = 5
 }
 
 function StartProcess {
