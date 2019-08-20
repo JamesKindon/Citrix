@@ -37,10 +37,10 @@ $DeliveryGroupName = $null
 
 # Optionally set configuration without being prompted
 #$VMs = Import-csv -Path 'Path to CSV Here'
-#$HostingConnectionName = "Hosting Connection Name Here"
-#$DestCatalogName = "Catalog Name Here"
-#$PublishedName = "Display name Here"
-#$DeliveryGroupName = "Delivery Group Name here"
+#$HostingConnectionName = "Hosting Connection Name Here" #(Get-BrokerHypervisorConnection | Select-Object Name)
+#$DestCatalogName = "Catalog Name Here" #(Get-BrokerCatalog | Select-Object Name)
+#$PublishedName = "Display name Here" 
+#$DeliveryGroupName = "Delivery Group Name here" #Get-BrokerDesktopGroup | Select-Object Name
 
 # If Not Manually set, prompt for variable configurations
 if ($null -eq $VMS) {
