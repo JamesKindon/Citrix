@@ -40,7 +40,7 @@ $DeliveryGroupName = $null
 #$HostingConnectionName = "Hosting Connection Name Here" #(Get-BrokerHypervisorConnection | Select-Object Name)
 #$CatalogName = "Catalog Name Here" #(Get-BrokerCatalog | Select-Object Name)
 #$PublishedName = "Display name Here" 
-#$DeliveryGroupName = "Delivery Group Name here" #Get-BrokerDesktopGroup | Select-Object Name
+#$DeliveryGroupName = "Delivery Group Name here" #(Get-BrokerDesktopGroup | Select-Object Name)
 
 # If Not Manually set, prompt for variable configurations
 if ($null -eq $VMS) {
