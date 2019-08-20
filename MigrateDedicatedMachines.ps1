@@ -31,14 +31,14 @@ Get-XDAuthentication
 
 $VMs = $null
 $HostingConnectionName = $null
-$DestCatalogName = $null
+$CatalogName = $null
 $PublishedName = $null
 $DeliveryGroupName = $null
 
 # Optionally set configuration without being prompted
 #$VMs = Import-csv -Path 'Path to CSV Here'
 #$HostingConnectionName = "Hosting Connection Name Here" #(Get-BrokerHypervisorConnection | Select-Object Name)
-#$DestCatalogName = "Catalog Name Here" #(Get-BrokerCatalog | Select-Object Name)
+#$CatalogName = "Catalog Name Here" #(Get-BrokerCatalog | Select-Object Name)
 #$PublishedName = "Display name Here" 
 #$DeliveryGroupName = "Delivery Group Name here" #Get-BrokerDesktopGroup | Select-Object Name
 
@@ -58,8 +58,8 @@ if ($null -eq $HostingConnectionName) {
     $HostingConnectionName = Get-BrokerHypervisorConnection | Select-Object Name,State,IsReady | Out-GridView -PassThru -Title "Select a Hosting Connection"
 }
 
-if ($null -eq $DestCatalogName) {
-    $DestCatalogName = Get-BrokerCatalog | Select-Object Name,AllocationType,PersistUserChanges,ProvisioningType,SessionSupport,ZoneName | Out-GridView -PassThru -Title "Select a Destination Catalog"
+if ($null -eq $CatalogName) {
+    $CatalogName = Get-BrokerCatalog | Select-Object Name,AllocationType,PersistUserChanges,ProvisioningType,SessionSupport,ZoneName | Out-GridView -PassThru -Title "Select a Destination Catalog"
 }
 
 if ($null -eq $DeliveryGroupName) {
@@ -67,7 +67,7 @@ if ($null -eq $DeliveryGroupName) {
 }
 
 
-$Catalog = (Get-BrokerCatalog -Name $DestCatalogName)
+$Catalog = (Get-BrokerCatalog -Name $CatalogName)
 $HostingConnectionDetail = (Get-BrokerHypervisorConnection | Where-Object {$_.Name -eq $HostingConnectionName})
 
 $Count = ($VMS | Measure-Object).Count
