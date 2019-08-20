@@ -1,11 +1,12 @@
 <#
 .SYNOPSIS
-via an exported CSV from an existing dedicated VDI catalog (Power Managed), migrated machines to Citrix Cloud with new hosting connection mappings
+via an exported CSV from an existing dedicated VDI catalog (Power Managed), migrate machines to Citrix Cloud with new hosting connection mappings
 
 .DESCRIPTION
 requires a clean export of an existing catalog, and any multiple assignments removed
 
 .EXAMPLE
+.\MigrateDedicatedMachines.ps1
 
 .NOTES
 Export required information from existing catalogs
