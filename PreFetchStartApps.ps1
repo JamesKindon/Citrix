@@ -24,6 +24,8 @@ Customise the ProcsAndWaits Hash table with your executables and timesouts
     'C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE' = 5
     'C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE' = 5
     'C:\Program Files\Microsoft Office\root\Office16\VISIO.EXE' = 5
+    'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe' = 4
+    'C:\Program Files\Mozilla Firefox\firefox.exe' = 4
 }
 
 function StartProcess {
