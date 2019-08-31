@@ -29,6 +29,8 @@ $CatalogName = $null
 $PublishedName = $null
 $DeliveryGroupName = $null
 
+$LogPS = "${env:SystemRoot}" + "\Temp\MachineMigration.log"
+
 # Optionally set configuration without being prompted
 #$VMs = Import-Clixml -Path 'Path to XML Here'
 #$HostingConnectionName = "Hosting Connection Name Here" #(Get-BrokerHypervisorConnection | Select-Object Name)
@@ -111,6 +113,11 @@ function SetVMDisplayName {
     }
 }
 
+$StartDTM = (Get-Date)
+
+Write-Verbose "Start Logging" -Verbose
+Start-Transcript $LogPS | Out-Null
+
 foreach ($VM in $VMs) {
     $OutputColor = $host.ui.RawUI.ForegroundColor
     $host.ui.RawUI.ForegroundColor = "Green"
@@ -124,3 +131,9 @@ foreach ($VM in $VMs) {
     
     $StartCount += 1
 }
+
+Write-Verbose "Stop logging" -Verbose
+$EndDTM = (Get-Date)
+Write-Verbose "Elapsed Time: $(($EndDTM-$StartDTM).TotalSeconds) Seconds" -Verbose
+Write-Verbose "Elapsed Time: $(($EndDTM-$StartDTM).TotalMinutes) Minutes" -Verbose
+Stop-Transcript  | Out-Null
