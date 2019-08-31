@@ -133,6 +133,7 @@ foreach ($VM in $VMs) {
 }
 
 Write-Verbose "Stop logging" -Verbose
+Write-Verbose "Logfile located at $LogPS" -Verbose
 $EndDTM = (Get-Date)
 Write-Verbose "Elapsed Time: $(($EndDTM-$StartDTM).TotalSeconds) Seconds" -Verbose
 Write-Verbose "Elapsed Time: $(($EndDTM-$StartDTM).TotalMinutes) Minutes" -Verbose
