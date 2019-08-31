@@ -1,26 +1,20 @@
 <#
 .SYNOPSIS
-via an exported CSV from an existing dedicated VDI catalog (Power Managed), migrate machines to Citrix Cloud with new hosting connection mappings
+via an exported XML from an existing dedicated VDI catalog (Power Managed), migrate machines to Citrix Cloud with new hosting connection mappings
 
 .DESCRIPTION
-requires a clean export of an existing catalog, and any multiple assignments removed
+requires a clean export of an existing catalog to Clixml (See notes)
 
 .EXAMPLE
 .\MigrateDedicatedMachines.ps1
 
 .NOTES
-Export required information from existing catalogs
+Export required information from existing catalog
 
 $CatalogName = 'CATALOGNAMEHERE'
-$ExportLocation = 'PATH HERE\vms.csv'
+$ExportLocation = 'PATH HERE\vms.xml'
 
-Get-BrokerMachine -CatalogName $CatalogName -MaxRecordCount 100000 | Select-Object `
-@{Name='AssociatedUserUPNs';Expression={[string]::join("", ($_.AssociatedUserUPNs))}},`
-@{Name='AssociatedUserSIDs';Expression={[string]::join("", ($_.AssociatedUserSIDs))}},`
-@{Name='AssociatedUserNames';Expression={[string]::join("", ($_.AssociatedUserNames))}},`
-@{Name='AssociatedUserFullNames';Expression={[string]::join("", ($_.AssociatedUserFullNames))}},`
-@{Name='AssignedUserSIDs';Expression={[string]::join("", ($_.AssignedUserSIDs))}},
-*  -ErrorAction SilentlyContinue | Export-CSV -NoTypeInformation $ExportLocation
+Get-BrokerMachine -CatalogName $CatalogName -MaxRecordCount 100000 | Export-Clixml $ExportLocation
 
 .LINK
 #>
@@ -36,41 +30,41 @@ $PublishedName = $null
 $DeliveryGroupName = $null
 
 # Optionally set configuration without being prompted
-#$VMs = Import-csv -Path 'Path to CSV Here'
+#$VMs = Import-Clixml -Path 'Path to XML Here'
 #$HostingConnectionName = "Hosting Connection Name Here" #(Get-BrokerHypervisorConnection | Select-Object Name)
 #$CatalogName = "Catalog Name Here" #(Get-BrokerCatalog | Select-Object Name)
 #$PublishedName = "Display name Here" 
 #$DeliveryGroupName = "Delivery Group Name here" #(Get-BrokerDesktopGroup | Select-Object Name)
 
 # If Not Manually set, prompt for variable configurations
-if ($null -eq $VMS) {
-    Write-Verbose "Please Select a CSV Import File" -Verbose
+if ($null -eq $VMs) {
+    Write-Verbose "Please Select an XML Import File" -Verbose
     $FileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{ 
         InitialDirectory = [Environment]::GetFolderPath('Desktop') 
-        Filter = 'Comma Separated (*.csv)|*.*'
+        Filter           = 'XML Files (*.xml)|*.*'
     }
     $null = $FileBrowser.ShowDialog()
 
-    $VMS = Import-csv -Path $FileBrowser.FileName
+    $VMs = Import-Clixml -Path $FileBrowser.FileName
 }
 
 if ($null -eq $HostingConnectionName) {
-    $HostingConnectionName = Get-BrokerHypervisorConnection | Select-Object Name,State,IsReady | Out-GridView -PassThru -Title "Select a Hosting Connection"
+    $HostingConnectionName = Get-BrokerHypervisorConnection | Select-Object Name, State, IsReady | Out-GridView -PassThru -Title "Select a Hosting Connection"
 }
 
 if ($null -eq $CatalogName) {
-    $CatalogName = Get-BrokerCatalog | Select-Object Name,AllocationType,PersistUserChanges,ProvisioningType,SessionSupport,ZoneName | Out-GridView -PassThru -Title "Select a Destination Catalog"
+    $CatalogName = Get-BrokerCatalog | Select-Object Name, AllocationType, PersistUserChanges, ProvisioningType, SessionSupport, ZoneName | Out-GridView -PassThru -Title "Select a Destination Catalog"
 }
 
 if ($null -eq $DeliveryGroupName) {
-    $DeliveryGroupName = Get-BrokerDesktopGroup | Select-Object Name,DeliveryType,Description,DesktopKind,Enabled,SessionSupport | Out-GridView -PassThru -Title "Select a Desktop Group"
+    $DeliveryGroupName = Get-BrokerDesktopGroup | Select-Object Name, DeliveryType, Description, DesktopKind, Enabled, SessionSupport | Out-GridView -PassThru -Title "Select a Desktop Group"
 }
 
 
 $Catalog = (Get-BrokerCatalog -Name $CatalogName)
-$HostingConnectionDetail = (Get-BrokerHypervisorConnection | Where-Object {$_.Name -eq $HostingConnectionName})
+$HostingConnectionDetail = (Get-BrokerHypervisorConnection | Where-Object { $_.Name -eq $HostingConnectionName })
 
-$Count = ($VMS | Measure-Object).Count
+$Count = ($VMs | Measure-Object).Count
 $StartCount = 1
 Write-Verbose "There are $Count machines to process" -Verbose
 
@@ -86,7 +80,7 @@ function AddVMtoCatalog {
 
 function AddVMtoDeliveryGroup {
     $DG = (Get-BrokerMachine -MachineName $VM.MachineName).DesktopGroupName
-    if ($Null -eq $DG) {
+    if ($null -eq $DG) {
         Write-Verbose "Adding $($VM.MachineName) to DesktopGroup $DeliveryGroupName" -Verbose
         Add-BrokerMachine -MachineName $VM.MachineName -DesktopGroup $DeliveryGroupName -Verbose
     }
@@ -96,8 +90,18 @@ function AddVMtoDeliveryGroup {
 }
 
 function AddUsertoVM {
-    Write-Verbose "Adding $($VM.AssociatedUserNames) to $($VM.MachineName)" -Verbose
-    Add-BrokerUser $VM.AssociatedUserNames -PrivateDesktop $VM.MachineName -Verbose
+    Write-Verbose "Attempting User Assignments" -Verbose
+    $AssignedUsers = $VM.AssociatedUserNames
+    if ($AssignedUsers) {
+        Write-Verbose "Processing $($VM.MachineName)" -Verbose
+        foreach ($User in $AssignedUsers) {
+            Write-Verbose "Adding $($User) to $($VM.MachineName)" -Verbose
+            Add-BrokerUser $User -PrivateDesktop $VM.MachineName -Verbose
+        }
+    }
+    else {
+        Write-Warning "There are no user assignments defined for $($VM.MachineName)" -Verbose
+    }
 }
 
 function SetVMDisplayName {
