@@ -61,7 +61,6 @@ foreach ($Folder in $AdminFolders) {
         Write-Verbose "Processing Folder $StartCount of $Count" -Verbose
         Write-Verbose "Folder: $($Folder.FolderName) is a root folder" -Verbose
         if (!(Get-BrokerAdminFolder -Name $Folder.Name -ErrorAction SilentlyContinue)) {
-            Write-Verbose "Processing Folder $StartCount of $Count" -Verbose
             Write-Warning "Folder: $($Folder.FolderName).......does not exist" -Verbose
             Write-Verbose "Creating root Folder: $($Folder.FolderName)" -Verbose
             try {
