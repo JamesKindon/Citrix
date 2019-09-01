@@ -13,7 +13,7 @@ Export required folder structure
 
 $ExportLocation = 'PATH HERE\AppFolderStructure.xml'
 
-Get-BrokerAdminFolder | Export-Clixml -Path $ExportLocation
+Get-BrokerAdminFolder -MaxRecordCount 100000 | Export-Clixml -Path $ExportLocation
 
 .LINK
 #>
