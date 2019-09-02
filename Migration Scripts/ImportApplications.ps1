@@ -160,13 +160,13 @@ foreach ($App in $Apps) {
                     foreach ($user in $users) {
                         $FullAppPath = $app.AdminFolderName + $app.PublishedName
                         Add-BrokerUser -Name "$user" -Application "$FullAppPath"
+                        write-Verbose "User: $($User) Succesfully added for application (Limit Visibility): $($app.PublishedName)" -Verbose
                     }
                 }
                 catch {
                     Write-Warning $_.Exception.Message -Verbose
                     write-Warning "Error on User: $($user) for application: $($app.PublishedName)"  -Verbose
                 }
-                write-Verbose "Users Succesfully added for application (Limit Visibility): $($app.PublishedName)" -Verbose
             }
         }
     }
