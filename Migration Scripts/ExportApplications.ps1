@@ -76,7 +76,7 @@ Write-Verbose "There are $Count Applications to process" -Verbose
 $Results = @()
 
 foreach ($app in $apps) {
-    Write-Verbose "Processing Application $StartCount ($($App.Name)) of $Count" -Verbose
+    Write-Verbose "Processing Application $StartCount ($($App.PublishedName)) of $Count" -Verbose
     # Builds Properties for each application ready for export
     $Properties = @{
         AdminFolderName                  = $app.AdminFolderName
