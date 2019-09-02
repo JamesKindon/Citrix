@@ -12,6 +12,7 @@ requires the folder structure to be in place to support imported applications. U
 https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/MigrateAppFolderStructure.ps1
 
 Use the corresponding ExportApplications.ps1 script to retrieve the appropriate export files
+https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ExportApplications.ps1
 
 .EXAMPLE
 .\ImportApplications.ps1

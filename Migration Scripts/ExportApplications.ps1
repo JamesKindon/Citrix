@@ -9,6 +9,7 @@ https://discussionsqa3.citrix.com/topic/356373-xendesktopxenapp-7x-applications-
 provides a clean export of existing Applications via Clixml (See notes)
 
 Use the corresponding ImportApplications.ps1 script to retrieve to import the export from this script
+https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ImportApplications.ps1
 
 .EXAMPLE
 .\ExportApplications.ps1
