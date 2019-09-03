@@ -25,7 +25,7 @@ The following example will export all apps from a single specified Delivery Grou
 
 .EXAMPLE
 The following example will export all apps from a single specified Delivery Group and output the XML files to C:\Temp.
-The example specified Citrix Cloud as the export location and thus calls Citrix Cloud based PS Modules.
+The following example specifies Citrix Cloud as the export location and thus calls Citrix Cloud based PS Modules.
 
 .\ExportApplications.ps1 -DeliveryGroup "Really Great Delivery Group" -OutputLocation "C:\Temp\" -Cloud
 
