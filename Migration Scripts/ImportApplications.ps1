@@ -15,7 +15,14 @@ Use the corresponding ExportApplications.ps1 script to retrieve the appropriate 
 https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ExportApplications.ps1
 
 .EXAMPLE
-.\ImportApplications.ps1
+The following Example will import via a selected XML file, all apps in the specified delivery group
+.\ImportApplications.ps1 -DeliveryGroup "Really Great Delivery Group"
+
+.EXAMPLE
+The following example will import via a selected XML file, all apps in the specified delivery group
+The following example specifies Citrix Cloud as the import location and thus calls Citrix Cloud based PS Modules.
+.\ImportApplications.ps1 -DeliveryGroup "Really Great Delivery Group" -Cloud
+
 
 .NOTES
 Export required from existing delivery group
@@ -28,22 +35,45 @@ Add App Group Support
 .LINK
 #>
 
+
+[CmdletBinding()]
+Param (
+    [Parameter(Mandatory = $False)]
+    [String] $DeliveryGroup = $null,
+
+    [Parameter(Mandatory = $False)]
+    [Switch] $Cloud
+)
+
+$LogPS = "${env:SystemRoot}" + "\Temp\ApplicationImport.log"
+$StartDTM = (Get-Date)
+
+$Apps = $null
+
+# Optionally set configuration without being prompted
+#$Apps = Import-Clixml -path C:\temp\Applications.xml
+#$DeliveryGroup = "Del Group Name"
+
 # Load Assemblies
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") 
 
 Add-PSSnapin citrix*
 
-#Get-XDAuthentication
+if ($Cloud.IsPresent) {
+    Write-Verbose "Cloud Switch Specified, Attempting to Authenticate to Citrix Cloud" -Verbose
+    try {
+        Get-XDAuthentication # Added a Cloud Check - not validated yet
+    }
+    catch {
+        Write-Warning "$_" -Verbose
+        Write-Warning "Authentication Failed. Bye"
+        Break
+    }
+}
 
-$Apps = $null
-$DelGroupName = $null
-
-$LogPS = "${env:SystemRoot}" + "\Temp\ApplicationImport.log"
-
-# Optionally set configuration without being prompted
-#$Apps = Import-Clixml -path C:\temp\Applications.xml
-#$DelGroupName = "Del Group Name"
+Write-Verbose "Start Logging" -Verbose
+Start-Transcript $LogPS | Out-Null
 
 # If Not Manually set, prompt for variable configurations
 if ($null -eq $Apps) {
@@ -53,41 +83,40 @@ if ($null -eq $Apps) {
         Filter           = 'XML Files (*.xml)|*.*'
     }
     $null = $FileBrowser.ShowDialog()
-
-    $Apps = Import-Clixml -Path $FileBrowser.FileName
+    try {
+        $Apps = Import-Clixml -Path $FileBrowser.FileName
+    }
+    catch {
+        Write-Warning "No input file selected. Exit"
+        Break
+    }
 }
 
 $Count = ($Apps | Measure-Object).Count
 $StartCount = 1
 
-$StartDTM = (Get-Date)
-
-Write-Verbose "Start Logging" -Verbose
-Start-Transcript $LogPS | Out-Null
-
 Write-Verbose "There are $Count Applications to process" -Verbose
 
-# Get Delivery Groups if not specified already
-if ($null -ne $DelGroupName) {
-    $DelGroupID = (Get-BrokerDesktopGroup -Name $DelGroupName -ErrorAction SilentlyContinue).Uid
-    if ($DelGroupID) {
-        Write-Verbose "Using Delivery Group: $($DelGroupName) as targeted Delivery Group" -Verbose
+# Get Delivery Groups if specified already
+if ($DeliveryGroup) {
+    try {
+        $DelGroupID = (Get-BrokerDesktopGroup -Name $DeliveryGroup).Uid
+        $DelGroup = Get-BrokerDesktopGroup -Uid $DelGroupID
+        Write-Verbose "Using Delivery Group: $($DelGroup.Name) as targeted Delivery Group" -Verbose
     }
-    else {
-        Write-Warning "Delivery Group: $($DelGroupName) not found. Exit Script." -Verbose
+    catch {
+        Write-Warning "Delivery Group: $($DeliveryGroup) not found. Exit Script." -Verbose
         Break
     }
 }
-
-# Display a list if Delivery Group not specifed
-if ($null -eq $DelGroupID) {
-    $DeliverGroups = Get-BrokerDesktopGroup | Format-list -property Name, UID | out-string
-    Write-Host  "Delivery groups : $DeliverGroups"
+else {
+    $DeliveryGroups = Get-BrokerDesktopGroup | Format-list -property Name, UID | out-string
+    Write-Host  "Delivery groups : $DeliveryGroups"
     $DelGroupID = Read-Host -Prompt 'Specify Delivery Group UID to Target Imported Apps'
+    $DelGroup = Get-BrokerDesktopGroup -Uid $DelGroupID
+    Write-Verbose "Using Delivery Group: $($DelGroup.Name) as targeted Delivery Group" -Verbose
 }
 
-$DelGroup = Get-BrokerDesktopGroup -Uid $DelGroupID
-Write-Verbose "Using Delivery Group: $($DelGroup.Name) as targeted Delivery Group" -Verbose
 
 foreach ($App in $Apps) {
     Write-Verbose "Processing Application $StartCount of $Count" -Verbose
@@ -132,7 +161,7 @@ foreach ($App in $Apps) {
         }
         catch {
             Write-Warning "FAILURE: Creating Application: $($App.Name) failed" -Verbose
-            Write-Warning $_ -Verbose
+            Write-Warning "$_" -Verbose
             $failed = $true
         }
 
@@ -150,7 +179,7 @@ foreach ($App in $Apps) {
             }
             catch {
                 Write-Warning "Setting App Icon Failed for $($app.PublishedName)" -Verbose
-                Write-Warning $_ -Verbose
+                Write-Warning "$_" -Verbose
             }
 
             # Adding Users and Groups to application associations
