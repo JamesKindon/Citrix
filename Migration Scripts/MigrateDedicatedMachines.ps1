@@ -50,8 +50,13 @@ if ($null -eq $VMs) {
         Filter           = 'XML Files (*.xml)|*.*'
     }
     $null = $FileBrowser.ShowDialog()
-
-    $VMs = Import-Clixml -Path $FileBrowser.FileName
+    try {
+        $VMs = Import-Clixml -Path $FileBrowser.FileName
+    }
+    catch {
+        Write-Warning "No input file selected. Exit"
+        Break
+    }
 }
 
 if ($null -eq $HostingConnectionName) {
