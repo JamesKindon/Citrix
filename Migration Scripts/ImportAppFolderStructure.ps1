@@ -6,7 +6,7 @@ via an exported XML from an existing environment, replicate exported folder stru
 requires a clean export of an existing folder structure to Clixml (See notes)
 
 .EXAMPLE
-.\MigrateAppFolderStructure.ps1
+.\ImportAppFolderStructure.ps1
 
 .NOTES
 Export required folder structure
@@ -28,7 +28,7 @@ Add-PSSnapin citrix*
 
 $AdminFolders = $null
 
-$LogPS = "${env:SystemRoot}" + "\Temp\AppFolderMigration.log"
+$LogPS = "${env:SystemRoot}" + "\Temp\AppFolderImport.log"
 
 # Optionally set configuration without being prompted
 #$AdminFolders = Import-Clixml -path C:\temp\AppFolderStructure.xml
