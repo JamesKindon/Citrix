@@ -30,12 +30,6 @@ The following example specifies Citrix Cloud as the export location and thus cal
 .\ExportApplications.ps1 -DeliveryGroup "Really Great Delivery Group" -OutputLocation "C:\Temp\" -Cloud
 
 .NOTES
-Use corresponding import script to achieve appropriate export
-
-$ExportLocation = 'PATH HERE\Apps.xml'
-
-# To do
-Add App Group Support
 
 .LINK
 #>

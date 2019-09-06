@@ -28,10 +28,6 @@ The following example specifies Citrix Cloud as the import location and thus cal
 Export required from existing delivery group
 Use corresponding export script to achieve appropriate export
 
-
-# To do
-Add App Group Support
-
 .LINK
 #>
 
