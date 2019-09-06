@@ -13,7 +13,7 @@ https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ImportAppl
 
 .EXAMPLE
 The following example will export all apps from all Delivery Group and output the XML files to C:\Temp
-.\ExportApplications.ps1 -ExportLocation "C:\Temp\"
+.\ExportApplications.ps1 -OutputLocation "C:\Temp\"
 
 .EXAMPLE
 The following example will export all apps from all Delivery Group and output the XML files to the current location

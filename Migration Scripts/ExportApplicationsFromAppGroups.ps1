@@ -11,16 +11,16 @@ The following example will export all apps from all Delivery Group and output th
 
 .EXAMPLE
 The following example will export all apps from all AppGroups and output the XML files to C:\Temp
-.\ExportApplicationsFromAppGroups -OutputFile "C:\temp"
+.\ExportApplicationsFromAppGroups -OutputLocation "C:\temp"
 
 .EXAMPLE
 The following example will export all apps from a single specified AppGroup and output the XML files to C:\Temp
-.\ExportApplicationsFromAppGroups -AppGroup "My AppGroup" -OutputFile "C:\temp"
+.\ExportApplicationsFromAppGroups -AppGroup "My AppGroup" -OutputLocation "C:\temp"
 
 .EXAMPLE
 The following example will export all apps from a single specified AppGroup and output the XML files to C:\Temp.
 The following example specifies Citrix Cloud as the export location and thus calls Citrix Cloud based PS Modules
-.\ExportApplicationsFromAppGroups -AppGroup "My AppGroup" -OutputFile "C:\temp" -Cloud
+.\ExportApplicationsFromAppGroups -AppGroup "My AppGroup" -OutputLocation "C:\temp" -Cloud
 
 .NOTES
 To be used in conjunction with the ImportApplicationsFromAppGroups.ps1 Script
