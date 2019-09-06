@@ -40,7 +40,7 @@ Param (
     [Switch] $Cloud
 )
 
-$LogPS = "${env:SystemRoot}" + "\Temp\ApplicationExport.log"
+$LogPS = "${env:SystemRoot}" + "\Temp\AppsFromAppGroupExport.log"
 $StartDTM = (Get-Date)
 
 # Optionally set configuration without being prompted
