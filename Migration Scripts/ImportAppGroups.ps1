@@ -94,10 +94,8 @@ foreach ($AppGroup in $AppGroups) {
         #Creating AppGroup
         Write-Verbose "Attempting to create AppGroup: $($AppGroup.Name)" -Verbose
         try {
-            New-BrokerApplicationGroup -Name $AppGroup.Name -Description $AppGroup.Description -Enabled $AppGroup.Enabled -UserFilterEnabled $AppGroup.UserFilterEnabled | Out-Null
-            if (Get-BrokerApplication -PublishedName $App.Name -ErrorAction SilentlyContinue) {
-                Write-Verbose "SUCCESS: AppGroup Succesfully Created: $($AppGroup.Name)" -Verbose
-            }
+            New-BrokerApplicationGroup -Name $AppGroup.Name -Description $AppGroup.Description -Enabled $AppGroup.Enabled -UserFilterEnabled $AppGroup.UserFilterEnabled -UUID $AppGroup.UUID | Out-Null
+            Write-Verbose "SUCCESS: AppGroup Succesfully Created: $($AppGroup.Name)" -Verbose
         }
         catch {
             Write-Warning "FAILURE: Creating AppGroup: $($AppGroup.Name) failed. Attempting next AppGroup" -Verbose

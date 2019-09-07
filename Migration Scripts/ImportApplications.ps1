@@ -144,7 +144,6 @@ foreach ($App in $Apps) {
             if ($app.AdminFolderName -ne "") { $MakeApp += ' -AdminFolder $app.AdminFolderName' }
             if ($app.UserFilterEnabled -eq "True") { $MakeApp += ' -UserFilterEnabled $app.UserFilterEnabled' }
             if ($null -ne $DelGroup) { $MakeApp += ' -DesktopGroup $DelGroup' }
-            # AppGroup?
 
             #Creating Application
             $Results = Invoke-Expression $MakeApp | out-string -Stream

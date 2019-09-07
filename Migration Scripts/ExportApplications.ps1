@@ -86,6 +86,8 @@ function GetAppsFromDeliveryGroup {
                         AdminFolderUid                   = $app.AdminFolderUid
                         ApplicationName                  = $app.ApplicationName
                         ApplicationType                  = $app.ApplicationType
+                        AssociatedApplicationGroupUUIDs  = $app.AssociatedApplicationGroupUUIDs
+                        AssociatedApplicationGroupUids   = $app.AssociatedApplicationGroupUids
                         AssociatedDesktopGroupPriorities = $app.AssociatedDesktopGroupPriorities
                         AssociatedDesktopGroupUUIDs      = $app.AssociatedDesktopGroupUUIDs
                         AssociatedDesktopGroupUids       = $app.AssociatedDesktopGroupUids
