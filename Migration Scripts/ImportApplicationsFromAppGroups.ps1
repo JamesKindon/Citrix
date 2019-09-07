@@ -249,6 +249,14 @@ foreach ($App in $Apps) {
                 AddUsersToApp
             }
             
+            # Adding Tags to Applications
+            if ($null -ne $app.Tags) {
+                $Tags = $app.Tags
+                foreach ($Tag in $Tags) {
+                    AddTags
+                }
+            }
+            
             # Add To Additional AppGroups
             if ($CountOfAppGroups -gt 1) {
                 Write-Verbose "Ensuring $($app.PublishedName) is a member of all specified AppGroups ($($CountOfAppGroups)). Searching for AppGroups" -Verbose
