@@ -124,6 +124,7 @@ function GetAppsFromDeliveryGroup {
                         Visible                          = $app.Visible
                         WaitForPrinterCreation           = $app.WaitForPrinterCreation
                         WorkingDirectory                 = $app.WorkingDirectory
+                        Tags                             = $app.Tags
                     }
 
                     # Stores each Application setting for export
