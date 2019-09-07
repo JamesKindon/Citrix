@@ -1,32 +1,32 @@
 <#
 .SYNOPSIS
-via an exported XML from an existing Delivery Group, Creates published applications against a new delivery group
-
-Some of the original code is found here, but had lots of issues
-https://discussionsqa3.citrix.com/topic/356373-xendesktopxenapp-7x-applications-exporting-importing/
+via an exported XML from an existing AppGroup Export, Creates published applications and assigns to AppGroup
 
 .DESCRIPTION
-requires a clean export of existing Applications via Clixml (See notes)
+requires a clean export of existing AppGroups via Clixml (See notes)
 
 requires the folder structure to be in place to support imported applications. Use corresponding Scripts to deal with this
 https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/MigrateAppFolderStructure.ps1
 
-Use the corresponding ExportApplications.ps1 script to retrieve the appropriate export files
-https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ExportApplications.ps1
+requires that AppGroups Exist to support the imported applications. Use corresponding Scripts to deal with this
+https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ImportAppGroups.ps1
+
 
 .EXAMPLE
-The following Example will import via a selected XML file, all apps in the specified delivery group
-.\ImportApplications.ps1 -DeliveryGroup "Really Great Delivery Group"
+The following Example will import via a selected XML file, all apps and assigned to the appropriate AppGroup
+.\ImportApplicationsFromAppGroup.ps1
 
 .EXAMPLE
-The following example will import via a selected XML file, all apps in the specified delivery group
+The following Example will import via a selected XML file, all apps and assigned to the appropriate AppGroup
 The following example specifies Citrix Cloud as the import location and thus calls Citrix Cloud based PS Modules.
-.\ImportApplications.ps1 -DeliveryGroup "Really Great Delivery Group" -Cloud
-
+.\ImportApplicationsFromAppGroup.ps1 -Cloud
 
 .NOTES
-Export required from existing delivery group
-Use corresponding export script to achieve appropriate export
+Folder Structure for Apps must exist
+AppGroups must Exist
+Use corresponding export scripts to achieve appropriate export
+https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/MigrateAppFolderStructure.ps1
+https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ImportAppGroups.ps1
 
 .LINK
 #>
@@ -35,27 +35,22 @@ Use corresponding export script to achieve appropriate export
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $False)]
-    [String] $DeliveryGroup = $null,
-
-    [Parameter(Mandatory = $False)]
     [Switch] $Cloud
 )
 
-$LogPS = "${env:SystemRoot}" + "\Temp\ApplicationImport.log"
+$LogPS = "${env:SystemRoot}" + "\Temp\ApplicationFromAppGroupImport.log"
 $StartDTM = (Get-Date)
 
 $Apps = $null
 
 # Optionally set configuration without being prompted
-#$Apps = Import-Clixml -path C:\temp\Applications.xml
-#$DeliveryGroup = "Del Group Name"
+#$Apps = Import-Clixml -path C:\temp\ApplicationsFromAppGroups.xml
 
 # Load Assemblies
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") 
 
 Add-PSSnapin citrix*
-
 
 function ImportandSetIcon {
     #Importing Icon
@@ -114,6 +109,25 @@ function AddTags {
     }
 }
 
+function AddToAdditionalAppGroups {
+    try {
+        $AG = Get-BrokerApplicationGroup | Where-Object { $_.UUID -eq $AppGroup.Guid }
+        if ($AG) {
+            try {
+                Get-BrokerApplication $App.PublishedName | Add-BrokerApplication -ApplicationGroup $AG.Name -ErrorAction SilentlyContinue
+                Write-Verbose "AppGroup: $($AG.Name) Assignment Updated" -Verbose
+            }
+            catch {
+                Write-Warning "$_" -Verbose
+                Write-Warning "Adding $($App.PublishedName) to AppGroup: $($AG.Name) Failed."
+            }
+        }   
+    }
+    catch {
+        Write-Warning "$_" -Verbose
+        Write-Warning "AppGroup with UUID $($AppGroup.Guid) does not exist. Please create the AppGroup"
+    }
+}
 
 if ($Cloud.IsPresent) {
     Write-Verbose "Cloud Switch Specified, Attempting to Authenticate to Citrix Cloud" -Verbose
@@ -152,31 +166,12 @@ $StartCount = 1
 
 Write-Verbose "There are $Count Applications to process" -Verbose
 
-# Get Delivery Groups if specified already
-if ($DeliveryGroup) {
-    try {
-        $DelGroupID = (Get-BrokerDesktopGroup -Name $DeliveryGroup).Uid
-        $DelGroup = Get-BrokerDesktopGroup -Uid $DelGroupID
-        Write-Verbose "Using Delivery Group: $($DelGroup.Name) as targeted Delivery Group" -Verbose
-    }
-    catch {
-        Write-Warning "Delivery Group: $($DeliveryGroup) not found. Exit Script." -Verbose
-        Break
-    }
-}
-else {
-    $DeliveryGroups = Get-BrokerDesktopGroup | Format-list -property Name, UID | out-string
-    Write-Host  "Delivery groups : $DeliveryGroups"
-    $DelGroupID = Read-Host -Prompt 'Specify Delivery Group UID to Target Imported Apps'
-    $DelGroup = Get-BrokerDesktopGroup -Uid $DelGroupID
-    Write-Verbose "Using Delivery Group: $($DelGroup.Name) as targeted Delivery Group" -Verbose
-}
-
-
 foreach ($App in $Apps) {
     Write-Verbose "Processing Application $StartCount of $Count" -Verbose
     if (Get-BrokerApplication -PublishedName $App.PublishedName -ErrorAction SilentlyContinue) {
         Write-Verbose "Application with Name: $($App.PublishedName) already exists. Ignoring" -Verbose
+        Write-Warning "AppGroup Memberships may not be in Sync with export due to existing application" -Verbose
+
         $StartCount += 1
     }
     else {
@@ -202,7 +197,30 @@ foreach ($App in $Apps) {
             if ($null -ne $app.WorkingDirectory) { $MakeApp += ' -WorkingDirectory $app.WorkingDirectory' }
             if ($app.AdminFolderName -ne "") { $MakeApp += ' -AdminFolder $app.AdminFolderName' }
             if ($app.UserFilterEnabled -eq "True") { $MakeApp += ' -UserFilterEnabled $app.UserFilterEnabled' }
-            if ($null -ne $DelGroup) { $MakeApp += ' -DesktopGroup $DelGroup' }
+            ########  Deal with AppGroups  
+            if ($null -ne $app.AssociatedApplicationGroupUUIDs) {
+
+                $ListofAppGroups = $app.AssociatedApplicationGroupUUIDs
+                $CountOfAppGroups = ($ListofAppGroups | Measure-Object).Count
+                Write-Verbose "$($app.PublishedName) should be a member of $($CountOfAppGroups) AppGroups. Searching for AppGroups" -Verbose
+                foreach ($AppGroup in $ListofAppGroups) {
+                    try {
+                        $AG = Get-BrokerApplicationGroup | Where-Object { $_.UUID -eq $appGroup.Guid }
+                        if ($AG) {
+                            Write-Verbose "AppGroup: $($AG.Name) Found for $($App.PublishedName)" -Verbose
+                        }   
+                    }
+                    catch {
+                        Write-Warning "$_" -Verbose
+                        Write-Warning "AppGroup does not exist. Please create the AppGroup" -Verbose
+                    }
+                }
+                if ($null -ne $AG) {
+                    Write-Verbose "AppGroup: $($AG.Name) used for Initial Application Creation and Assignment" -Verbose
+                }
+                $MakeApp += ' -ApplicationGroup $AG.Name' #Use the last AppGroup Defined in the array
+            }
+            ########            
 
             #Creating Application
             $Results = Invoke-Expression $MakeApp | out-string -Stream
@@ -215,6 +233,7 @@ foreach ($App in $Apps) {
         }
         catch {
             Write-Warning "FAILURE: Creating Application: $($App.Name) failed" -Verbose
+            Write-Warning "FAILURE: Application Group does not exist" -Verbose
             Write-Warning "$_" -Verbose
             $failed = $true
         }
@@ -229,12 +248,12 @@ foreach ($App in $Apps) {
             If ($null -ne $app.AssociatedUserNames) {
                 AddUsersToApp
             }
-
-            # Adding Tags to Applications
-            if ($null -ne $app.Tags) {
-                $Tags = $app.Tags
-                foreach ($Tag in $Tags) {
-                    AddTags
+            
+            # Add To Additional AppGroups
+            if ($CountOfAppGroups -gt 1) {
+                Write-Verbose "Ensuring $($app.PublishedName) is a member of all specified AppGroups ($($CountOfAppGroups)). Searching for AppGroups" -Verbose
+                foreach ($AppGroup in $ListofAppGroups) {
+                    AddToAdditionalAppGroups
                 }
             }
         }
@@ -246,4 +265,4 @@ Write-Verbose "Logfile located at $LogPS" -Verbose
 $EndDTM = (Get-Date)
 Write-Verbose "Elapsed Time: $(($EndDTM-$StartDTM).TotalSeconds) Seconds" -Verbose
 Write-Verbose "Elapsed Time: $(($EndDTM-$StartDTM).TotalMinutes) Minutes" -Verbose
-Stop-Transcript  | Out-Null
+Stop-Transcript | Out-Null
