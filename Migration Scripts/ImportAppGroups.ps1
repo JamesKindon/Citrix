@@ -45,6 +45,71 @@ $AppGroups = $null
 
 Add-PSSnapin citrix*
 
+function AddUsersToAppGroups {
+    $Users = $AppGroup.AssociatedUserNames
+    foreach ($User in $Users) {
+        try {
+            Write-Verbose "Adding user: $($User) to $($AppGroup.Name)" -Verbose
+            Add-BrokerUser $User -ApplicationGroup $AppGroup.Name
+        }
+        catch {
+            Write-Warning "Failed to Add User to AppGroup: $($AppGroup.Name). Attempting next AppGroup"
+            Write-Warning "$_" -Verbose
+        }
+    }  
+}
+
+function AddTags { ##################THIS NEEEDS FIXING FOR APPGROUPS #####RestrictToTag is what we want
+    if (Get-BrokerTag -Name $Tag -ErrorAction SilentlyContinue) {
+        Write-Verbose "Tag: $($Tag) Exists. Attempting to assign" -Verbose
+        try {
+            Get-BrokerTag -Name $Tag | Add-BrokerTag -ApplicationGroup $AppGroup.Name
+            Write-Verbose "SUCCESS: Assigned Tag: $($Tag) to $($AppGroup.Name)" -Verbose
+        }
+        catch {
+            Write-Warning "$_" -Verbose
+        } 
+    }
+    else {
+        try {
+            Write-Verbose "Tag: $($Tag) does not exist. Attempting to create" -Verbose
+            New-BrokerTag -Name $Tag | Out-Null
+            Write-Verbose "SUCCESS: Created Tag: $($Tag). Attempting to Assign" -Verbose
+            Get-BrokerTag -Name $Tag | Add-BrokerTag -ApplicationGroup $AppGroup.Name
+            Write-Verbose "SUCCESS: RestrictToTag: $($Tag) set for $($AppGroup.Name)" -Verbose
+        }
+        catch {
+            Write-Warning "$_" -Verbose
+        } 
+    }
+}
+
+function RestrictToTag {
+    if (Get-BrokerTag -Name $Tag -ErrorAction SilentlyContinue) {
+        Write-Verbose "Tag: $($Tag) Exists. Attempting to assign" -Verbose
+        try {
+            Set-BrokerApplicationGroup $AppGroup.Name -RestrictToTag $Tag
+            Write-Verbose "SUCCESS: RestrictToTag: $($Tag) set for $($AppGroup.Name)" -Verbose
+        }
+        catch {
+            Write-Warning "$_" -Verbose
+        }
+    }
+    else {
+        try {
+            Write-Verbose "Tag: $($Tag) does not exist. Attempting to create" -Verbose
+            New-BrokerTag -Name $Tag | Out-Null
+            Write-Verbose "SUCCESS: Created Tag: $($Tag). Attempting to Assign" -Verbose
+            $Tag = Get-BrokerTag -Name $Tag
+            Set-BrokerApplicationGroup $AppGroup.Name -RestrictToTag $Tag.Name
+            Write-Verbose "SUCCESS: RestrictToTag: $($Tag.Name) set for $($AppGroup.Name)" -Verbose
+        }
+        catch {
+            Write-Warning "$_" -Verbose
+        }
+    }
+}
+
 if ($Cloud.IsPresent) {
     Write-Verbose "Cloud Switch Specified, Attempting to Authenticate to Citrix Cloud" -Verbose
     try {
@@ -107,17 +172,20 @@ foreach ($AppGroup in $AppGroups) {
 
         if ($failed -ne $true) {
             #Assigning Users
-            $Users = $AppGroup.AssociatedUserNames
-            foreach ($User in $Users) {
-                try {
-                    Write-Verbose "Adding user: $($User) to $($AppGroup.Name)" -Verbose
-                    Add-BrokerUser $User -ApplicationGroup $AppGroup.Name
+            AddUsersToAppGroups
+            
+            # Adding Tags to AppGroups  #####RestrictToTag is what we want
+            if ($null -ne $AppGroup.Tags) {
+                $Tags = $AppGroup.Tags
+                foreach ($Tag in $Tags) {
+                    AddTags
                 }
-                catch {
-                    Write-Warning "Failed to Add User to AppGroup: $($AppGroup.Name). Attempting next AppGroup"
-                    Write-Warning "$_" -Verbose
-                }
-            }   
+            }
+            
+            if ($null -ne $AppGroup.RestrictToTag) {
+                $Tag = $AppGroup.RestrictToTag
+                RestrictToTag
+            }
         }
     }
 }
