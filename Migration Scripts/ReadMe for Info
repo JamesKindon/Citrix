@@ -10,7 +10,8 @@ Export Scripts: (Source Farm)
         - Exports all applications from an existing Delivery AppGroups to XML
         - Can define a Delivery Group, if not defined, Script will Export each Delivery Group to a unique XML
     ExportApplicationsFromAppGroups.ps1
-        - Exports all applications from all AppGroups to XML
+        - Exports all applications from AppGroups to XML
+        - Can define an AppGroup, if not defined, all AppGroups and all applications are exported to an XML file 
 
 Import Scripts: (Destination Farm or Cloud Site)
 
@@ -28,7 +29,8 @@ Import Scripts: (Destination Farm or Cloud Site)
     ImportAppGroups.ps1
         - Imports all defined AppGroups from an exported XML configuration
         - If AppGroups already exists, Script ignores and moves on
-        - if AppGroup does not exist, Script creates the AppGroup 
+        - If AppGroup does not exist, Script creates the AppGroup. 
+            - Creation uses the exported UUID from the export file. This allows for mapping of apps on import
         - If AppGroups have Tags defined, Script checks for existance of Tags: 
             - If not found: Script attempts to create
             - If found: Script attempts to use
