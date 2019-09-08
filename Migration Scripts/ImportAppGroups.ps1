@@ -59,7 +59,7 @@ function AddUsersToAppGroups {
     }  
 }
 
-function AddTags { ##################THIS NEEEDS FIXING FOR APPGROUPS #####RestrictToTag is what we want
+function AddTags { 
     if (Get-BrokerTag -Name $Tag -ErrorAction SilentlyContinue) {
         Write-Verbose "Tag: $($Tag) Exists. Attempting to assign" -Verbose
         try {
@@ -174,7 +174,7 @@ foreach ($AppGroup in $AppGroups) {
             #Assigning Users
             AddUsersToAppGroups
             
-            # Adding Tags to AppGroups  #####RestrictToTag is what we want
+            # Adding Tag to AppGroups
             if ($null -ne $AppGroup.Tags) {
                 $Tags = $AppGroup.Tags
                 foreach ($Tag in $Tags) {
@@ -182,6 +182,7 @@ foreach ($AppGroup in $AppGroups) {
                 }
             }
             
+            # Adding Tag Restrictions
             if ($null -ne $AppGroup.RestrictToTag) {
                 $Tag = $AppGroup.RestrictToTag
                 RestrictToTag
