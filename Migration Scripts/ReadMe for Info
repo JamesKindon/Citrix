@@ -1,0 +1,74 @@
+Export Scripts: (Source Farm)
+
+    ExportAppFolderStructure.ps1
+        - Exports application folder structure from an existing farm to XML
+    ExportTags.ps1
+        - Exports all defined tags from an existing farm to XML
+    ExportAppGroups.ps1
+        - Exports all AppGroups from an existing farm to XML 
+    ExportApplications.ps1
+        - Exports all applications from an existing Delivery AppGroups to XML
+        - Can define a Delivery Group, if not defined, Script will Export each Delivery Group to a unique XML
+    ExportApplicationsFromAppGroups.ps1
+        - Exports all applications from AppGroups to XML
+        - Can define an AppGroup, if not defined, all AppGroups and all applications are exported to an XML file 
+
+Import Scripts: (Destination Farm or Cloud Site)
+
+    ImportAppFolderStructure.ps1
+        - Imports application folder structure from an exported XML configuration
+        - Script handles parent pathing
+        - If folder already exists in the structure, Script ignores and moves on
+        - If folder does not exist, Script creates folder within the existing structure
+        - Cloud Switch will prompt for Cloud Credentials. Ensure appropriate Cloud PS Modules available
+    ImportTags.ps1
+        - Imports all defined tags from an exported XML configuration
+        - If Tag already exists, Script ignores and moves on 
+        - If Tag does not exist, Script creates the Tag
+        - Cloud Switch will prompt for Cloud Credentials. Ensure appropriate Cloud PS Modules available
+    ImportAppGroups.ps1
+        - Imports all defined AppGroups from an exported XML configuration
+        - If AppGroups already exists, Script ignores and moves on
+        - If AppGroup does not exist, Script creates the AppGroup. 
+            - Creation uses the exported UUID from the export file. This allows for mapping of apps on import
+        - If AppGroups have Tags defined, Script checks for existance of Tags: 
+            - If not found: Script attempts to create
+            - If found: Script attempts to use
+        - If AppGroups have RestrictToTag configurations defined, Script checks for existance of Tag, if not found attempts to create, if found, attempts to assign
+        - If Appgroups have visibility limitations defined, Script will configured matching visibility settings
+        - If AppGroups have users defined, Script applies all user assignments
+        - Cloud Switch will prompt for Cloud Credentials. Ensure appropriate Cloud PS Modules available
+    ImportApplications.ps1
+        - Imports all defined applications from an exported XML configuration
+        - Can define a Delivery Group for Import, if not defined, Script will list all Delivery Groups and require a selection
+        - If applications have Tags defined, Script checks for existance of Tags: 
+            - If not found: Script attempts to create 
+            - if found: Scripts attempts to use
+        - Script will import Icon files and apply (Note, applications with inbuilt icons used will fail and utilise default)
+        - If applications have users defined, Script applies all user assignments
+        - Cloud Switch will prompt for Cloud Credentials. Ensure appropriate Cloud PS Modules available
+    ImportApplicationsFromAppGroups.ps1
+        - Imports all defined applications from an exported XML configuration
+        - If AppGroup does not exist, Script ignores application creation
+        - If multiple AppGroups are defined:
+            - Script will leverage the last AppGroup in the Array for initial creation
+            - Script loops through all AppGroups post creation to ensure all AppGroup memberships are mirrored
+        - If applications have Tags defined, Script checks for existance of Tags: 
+            - If not found: Script attempts to create
+            - If found: Script attempts to assign
+        - Script will import Icon files and apply (Note, applications with inbuilt icons used will fail and utilise default)
+        - If applications have users defined, Script applies all user assignments
+        - Cloud Switch will prompt for Cloud Credentials. Ensure appropriate Cloud PS Modules available
+
+Misc Migration Scenarios:
+
+    MigrateDedicatedMachines.ps1
+        - Imports a list of Dedicated/Persistent Virtual Machines from an existing Catalog
+        - Script Prompts for:
+            - New Hypervisor Connection (lists all connections in destination farm)
+            - New Catalog (lists all Catalogs in destination farm)
+            - New Delivery Group (lists all Delivery Groups in destination farm)
+        - Optionally, a published Name can be defined to avoid Delivery Group Display Name being used
+        - Script will mirror user assignments
+        - If machine already exists, Script will ignore and move on
+        - Tested with Cloud Migrations
