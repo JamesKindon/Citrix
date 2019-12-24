@@ -36,17 +36,17 @@ Begin {
             #"Microsoft.WindowsCommunicationsApps", # Mail, Calendar etc
             #"Microsoft.WindowsSoundRecorder", 
             #"Microsoft.WindowsStore"
-            "Microsoft.WindowsCalculator", 
+            #"Microsoft.WindowsCalculator", #Removed
             "Microsoft.StorePurchaseApp"
         ))
 
     # Windows 10 version 1809
     $WhiteListedApps.AddRange(@(
-            "Microsoft.ScreenSketch",
-            "Microsoft.HEIFImageExtension",
-            "Microsoft.VP9VideoExtensions",
-            "Microsoft.WebMediaExtensions",
-            "Microsoft.WebpImageExtension"
+            #"Microsoft.ScreenSketch", #Removed
+            #"Microsoft.HEIFImageExtension", #Removed
+            #"Microsoft.VP9VideoExtensions", #Removed
+            #"Microsoft.WebMediaExtensions", #Removed
+            #"Microsoft.WebpImageExtension" #Removed
         ))
 
     # Windows 10 version 1903
