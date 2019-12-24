@@ -7,4 +7,4 @@
 
 regsvr32 "C:\Program Files (x86)\Windows Photo Viewer\PhotoViewer.dll"
 
-Regfile Import and Default File Type Assocs
+Regfile Import and Default File Type Assocs [https://github.com/JamesKindon/Citrix/blob/master/Windows%2010%20Optimisation/Restore_Windows_Photo_Viewer.reg]
