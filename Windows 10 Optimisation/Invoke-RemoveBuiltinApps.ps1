@@ -18,6 +18,7 @@
     1.0.0 - (2019-03-10) Initial script updated with help section and a fix for randomly freezing
     1.1.0 - (2019-05-03) Added support for Windows 10 version 1903 (19H1)
     1.1.1 - (2019-08-13) Removed the part where it was disabling/enabling configuration for Store updates, as it's not needed
+    1.1.2 - (13.01.2020) James Kindon - removed more useless apps
 #>
 Begin {
     # White list of Features On Demand V2 packages
