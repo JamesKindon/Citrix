@@ -43,10 +43,10 @@ Begin {
     # Windows 10 version 1809
     $WhiteListedApps.AddRange(@(
             #"Microsoft.ScreenSketch", #Removed
-            #"Microsoft.HEIFImageExtension", #Removed
-            #"Microsoft.VP9VideoExtensions", #Removed
-            #"Microsoft.WebMediaExtensions", #Removed
-            #"Microsoft.WebpImageExtension" #Removed
+            "Microsoft.HEIFImageExtension",
+            "Microsoft.VP9VideoExtensions",
+            "Microsoft.WebMediaExtensions",
+            "Microsoft.WebpImageExtension"
         ))
 
     # Windows 10 version 1903
