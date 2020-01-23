@@ -26,7 +26,7 @@
  <Exclude>AppData\Local\Google\Chrome\User Data\SwReporter</Exclude>
  <Exclude>AppData\Local\Google\Chrome\User Data\SwiftShader</Exclude>
  <Exclude>AppData\Local\Google\Chrome\User Data\PepperFlash</Exclude>
- <Exclude>AppData\Local\Microsoft\Edge Dev\User Data\Default\Cache</Exclude>
+ <Exclude>AppData\Local\Microsoft\Edge\User Data\Default\Cache</Exclude>
  <Exclude>AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cache</Exclude>
  <Exclude>AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Cache</Exclude>
  <Exclude>AppData\Local\Microsoft\Windows\WER</Exclude>
