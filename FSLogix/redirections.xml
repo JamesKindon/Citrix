@@ -2,46 +2,48 @@
 
 <FrxProfileFolderRedirection ExcludeCommonFolders="0">
 	
-<Includes />
-	
 <Excludes>		
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\Cache</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\Cached Theme Image</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\JumpListIcons</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\JumpListIconsOld</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\Storage</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\Local Storage</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\SessionStorage</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\Media Cache</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\GPUCache</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\WebApplications</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\SyncData</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\SyncDataBackup</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\Default\Pepper Data\Shockwave Flash\CacheWriteableAdobeRoot</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\WidevineCDM</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\EVWhitelist</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\pnacl</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\recovery</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\ShaderCache</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\SwReporter</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\SwiftShader</Exclude>
- <Exclude>AppData\Local\Google\Chrome\User Data\PepperFlash</Exclude>
- <Exclude>AppData\Local\Microsoft\Edge\User Data\Default\Cache</Exclude>
- <Exclude>AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cache</Exclude>
- <Exclude>AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Cache</Exclude>
- <Exclude>AppData\Local\Microsoft\Windows\WER</Exclude>
- <Exclude>AppData\Local\Microsoft\Terminal Server Client\Cache</Exclude>
- <Exclude>AppData\Roaming\Downloaded Installations</Exclude>
- <Exclude>AppData\Local\Downloaded Installations</Exclude>
- <Exclude>AppData\Local\Sage\Central\AutoUpdates\LaunchDirectory</Exclude>
- <Exclude>AppData\Local\Microsoft\Office\16.0\Lync\Tracing</Exclude>
- <Exclude>AppData\Local\Microsoft\MSOIdentityCRL\Tracing</Exclude>
- <Exclude>AppData\Local\Microsoft\OneNote\16.0\Backup</Exclude>
- <Exclude>AppData\Local\CrashDumps</Exclude>
- <Exclude>AppData\Local\nuget\Cache</Exclude>
- <Exclude>AppData\Local\Apple</Exclude>
- <Exclude>AppData\Local\Apple Computer</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\Cache</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\Cached Theme Image</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\JumpListIcons</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\JumpListIconsOld</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\Storage</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\Local Storage</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\SessionStorage</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\Media Cache</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\GPUCache</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\WebApplications</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\SyncData</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\SyncDataBackup</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\Pepper Data\Shockwave Flash\CacheWriteableAdobeRoot</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\WidevineCDM</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\EVWhitelist</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\pnacl</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\recovery</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\ShaderCache</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\SwReporter</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\SwiftShader</Exclude>
+ <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\PepperFlash</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Edge\User Data\Default\Cache</Exclude>
+ <Exclude Copy="0">AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cache</Exclude>
+ <Exclude Copy="0">AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Cache</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Windows\WER</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Terminal Server Client\Cache</Exclude>
+ <Exclude Copy="0">AppData\Roaming\Downloaded Installations</Exclude>
+ <Exclude Copy="0">AppData\Local\Downloaded Installations</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Office\16.0\Lync\Tracing</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\MSOIdentityCRL\Tracing</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\OneNote\16.0\Backup</Exclude>
+ <Exclude Copy="0">AppData\Local\CrashDumps</Exclude>
+ <Exclude Copy="0">AppData\Local\nuget\Cache</Exclude>
+ <Exclude Copy="0">AppData\Local\Apple</Exclude>
+ <Exclude Copy="0">AppData\Local\Apple Computer</Exclude>
 </Excludes>
+  
+<Includes>
+ <Include Copy="3">AppData\LocalLow\Sun\Java\Deployment\security</Include>
+</Includes>
+
 </FrxProfileFolderRedirection>
 
 
