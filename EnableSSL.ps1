@@ -204,7 +204,7 @@ function ValidateSSLStatus {
             Write-Host "INFO: SSL Validation Test: ............PASS" -ForegroundColor Green
         }
         elseif ($AppId -notlike "*$GUIDf*") {
-            Write-Warning "INFO: A Certificate is bound to $($IpV4ssl) with hash: $($Hash), however is not bound to the correct AppId"
+            Write-Warning "A Certificate is bound to $($IpV4ssl) with hash: $($Hash), however is not bound to the correct AppId"
             Write-Host "INFO: SSL Validation Test: ............FAIL" -ForegroundColor Red
         }
     }
@@ -218,7 +218,7 @@ function ValidateHTTPStatus {
         Write-Host "INFO: HTTP Validation Test: ...........PASS" -ForegroundColor Green
     }
     elseif ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "1" -or $null -eq $XMLHttpStatus.XmlServicesEnableNonSsl) {
-        Write-Warning "INFO: XML HTTP is Enabled"
+        Write-Warning "XML HTTP is Enabled"
         Write-Host "INFO: HTTP Validation Test: ...........FAIL" -ForegroundColor Red
     }
 }
