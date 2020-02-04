@@ -99,7 +99,7 @@ function DisableHTTP {
         New-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -PropertyType DWORD -Value '0' -Force | Out-Null
         $XMLHTTPStatus = Get-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -ErrorAction SilentlyContinue
     }
-    if ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "1") {
+    if ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "0") {
         Write-Host "XML HTTP is Disabled" -ForegroundColor Green
     }
 }
