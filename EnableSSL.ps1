@@ -14,7 +14,13 @@ Enables SSL binding for XML Encryption
 Disables (Deletes) the existing SSL Binding if exists. Enables HTTP
 
 .PARAMETER DisableHTTP
-Disables the HTTP Listener for XML
+Disables the HTTP listener for XML
+
+.PARAMETER ValidateSSLStatus
+Validates SSL configuration
+
+.PARAMETER ValidateHTTPStatus
+Validates HTTP configuration
 
 .EXAMPLE
 PS C:\> .\EnableSSL.ps1 -EnableSSL
@@ -29,6 +35,12 @@ The abvoe example will Disable answering XML requests on HTTP
 PS C:\> .\EnableSSL.ps1 -DisableSSL
 The above example will delete the SSL bindings, and enforce HTTP so that the Cloud Connector or Broker isn't left useless
 
+PS C:\> .\EnableSSL.ps1 -ValidateSSLStatus
+The above example will validate the SSL status. It will check that a certificate is bound to the appropriate IP and AppId
+
+PS C:\> .\EnableSSL.ps1 -ValidateHTTPStatus
+The above example will validate that HTTP is disabled for XML
+
 .NOTES
 .LINK
 #>
@@ -42,7 +54,13 @@ Param (
     [Switch] $DisableHTTP,
 
     [Parameter(Mandatory = $False, ParameterSetName = 'ActionDisable')]
-    [Switch] $DisableSSL
+    [Switch] $DisableSSL,
+
+    [Parameter(Mandatory = $False, ParameterSetName = 'Validate')]
+    [Switch] $ValidateSSLStatus,
+
+    [Parameter(Mandatory = $False, ParameterSetName = 'Validate')]
+    [Switch] $ValidateHTTPStatus
 )
 
 function EnableSSL {
@@ -153,6 +171,59 @@ function ResetBrokerServices {
 
 }
 
+function ValidateSSLStatus {
+    Write-Host "INFO: This is a Citrix $BrokerType"
+    Write-Host "INFO: Performing SSL Status Validation"
+
+    $ipV4 = Test-Connection -ComputerName (hostname) -Count 1 | Select-Object -ExpandProperty IPV4Address 
+    $ipV4ssl = "$ipV4 :443" -replace " ", ""
+    $Results = netsh http show sslcert ipport=$ipV4ssl
+    $AppId = $Results | Select-String "Application ID               :"
+    $AppId = $AppId -replace "    Application ID               : ", ""
+    $Hash = $Results | Select-String "Certificate Hash             :"
+    $Hash = $Hash -replace "    Certificate Hash             : ", ""
+
+    if ($Results -match "The system cannot find the file specified") {
+        Write-Warning "There is no SSL Certificate Bound to $($ipV4)"
+        Write-Host "INFO: SSL Validation Test: ............FAIL" -ForegroundColor Red
+    }
+    else {
+        # Fetching registry key to get the Citrix Broker Service GUID
+        New-PSDrive -Name 'HKCR' -PSProvider 'Registry' -Root 'HKEY_CLASSES_ROOT' | Out-Null
+        $CBS_Guid = Get-ChildItem 'HKCR:\Installer\Products' -Recurse -Ea 0 | Where-Object { $key = $_; $_.GetValueNames() | ForEach-Object { $key.GetValue($_) } | Where-Object { $_ -like '*Citrix Broker Service*' } } | Select-Object Name
+        $CBS_Guid.Name -match "[A-Z0-9]*$" | Out-Null
+        $GUID = $Matches[0]
+
+        # Formating the string to look like a GUID with dash ( - )
+        [GUID]$GUIDf = "$GUID"
+        Write-Host "INFO: Citrix Broker Service GUID for $env:computername is: $GUIDf";
+        # Closing PSDrive
+        Remove-PSDrive -Name HKCR
+        if ($AppId -like "*$GUIDf*") {
+            Write-Host "INFO: A certificate is bound to $($IpV4ssl) with hash: $($Hash) which matches the Citrix Broker GUID $($GUIDf)"
+            Write-Host "INFO: SSL Validation Test: ............PASS" -ForegroundColor Green
+        }
+        elseif ($AppId -notlike "*$GUIDf*") {
+            Write-Warning "INFO: A Certificate is bound to $($IpV4ssl) with hash: $($Hash), however is not bound to the correct AppId"
+            Write-Host "INFO: SSL Validation Test: ............FAIL" -ForegroundColor Red
+        }
+    }
+}
+
+function ValidateHTTPStatus {
+    Write-Host "INFO: Performing HTTP Status Validation"
+    $XMLHTTPStatus = Get-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -ErrorAction SilentlyContinue
+    if ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "0") {
+        Write-Host "INFO: XML HTTP is Disabled" -ForegroundColor Green
+        Write-Host "INFO: HTTP Validation Test: ...........PASS" -ForegroundColor Green
+    }
+    elseif ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "1" -or $null -eq $XMLHttpStatus.XmlServicesEnableNonSsl) {
+        Write-Warning "INFO: XML HTTP is Enabled"
+        Write-Host "INFO: HTTP Validation Test: ...........FAIL" -ForegroundColor Red
+    }
+}
+
+
 $CloudConnector = Get-Service 'CitrixWorkspaceCloudAgentSystem' -ErrorAction SilentlyContinue
 $DeliveryController = Get-Service 'CitrixBrokerService' -ErrorAction SilentlyContinue
 
@@ -197,4 +268,10 @@ if ($DisableHTTP.IsPresent) {
     if ($BrokerType -eq 'DeliveryController') {
         ResetBrokerServices
     }
+}
+if ($ValidateHTTPStatus.IsPresent) {
+    ValidateHTTPStatus
+}
+if ($ValidateSSLStatus.IsPresent) {
+    ValidateSSLStatus
 }
