@@ -1,0 +1,20 @@
+{
+    "homepage": "https://www.office.com",
+    "homepage_is_newtabpage": false,
+    "browser": {
+      "show_home_button": true
+    },
+    "distribution": {
+        "skip_first_run_ui": true,
+        "show_welcome_page": false,
+        "import_search_engine": false,
+        "import_history": false,
+        "do_not_create_any_shortcuts": false,
+        "do_not_create_taskbar_shortcut": false,
+        "do_not_create_desktop_shortcut": true,
+        "do_not_launch_chrome": true,
+        "make_chrome_default": true,
+        "make_chrome_default_for_user": true,
+        "system_level": true
+    }
+}
