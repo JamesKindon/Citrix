@@ -72,14 +72,14 @@ function EnableSSL {
  
     # Formating the string to look like a GUID with dash ( - )
     [GUID]$GUIDf = "$GUID"
-    Write-Host -Object "Citrix Broker Service GUID for $env:computername is: $GUIDf" -foregroundcolor "yellow";
+    Write-Host -Object "INFO: Citrix Broker Service GUID for $env:computername is: $GUIDf" -foregroundcolor "Cyan";
     # Closing PSDrive
     Remove-PSDrive -Name HKCR
  
     # Getting local IP address and adding :443 port
     $ipV4 = Test-Connection -ComputerName (hostname) -Count 1 | Select-Object -ExpandProperty IPV4Address 
     $ipV4ssl = "$ipV4 :443" -replace " ", ""
-    Write-Host -Object "The IP Address for $env:computername is: $ipV4ssl" -foregroundcolor "green";
+    Write-Host -Object "INFO: The IP Address for $env:computername is: $ipV4ssl" -ForegroundColor Cyan;
  
     # Getting the certificate thumbprint
     #$Thumbprint = (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object {$_.Subject -match "$HostName"}).Thumbprint -join ';';
@@ -88,7 +88,7 @@ function EnableSSL {
         Write-Warning "No Cert Selected. Goodbye."
         Break
     }
-    Write-Host -Object "Certificate Thumbprint for $env:computername is: $Thumbprint" -foregroundcolor "magenta"; 
+    Write-Host -Object "INFO: Certificate Thumbprint for $env:computername is: $Thumbprint" -ForegroundColor Cyan; 
  
     # Preparing to execute the netsh command inside powershell
     $SSLxml = "http add sslcert ipport=$ipV4ssl certhash=$Thumbprint appid={$GUIDf}"
@@ -118,7 +118,7 @@ function DisableHTTP {
         $XMLHTTPStatus = Get-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -ErrorAction SilentlyContinue
     }
     if ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "0") {
-        Write-Host "XML HTTP is Disabled" -ForegroundColor Green
+        Write-Host "INFO: XML HTTP is Disabled" -ForegroundColor Green
     }
 }
 
@@ -134,46 +134,46 @@ function EnableHTTP {
         $XMLHTTPStatus = Get-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -ErrorAction SilentlyContinue
     }
     if ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "1") {
-        Write-Host "XML HTTP is Enabled" -ForegroundColor Green
+        Write-Host "INFO: XML HTTP is Enabled" -ForegroundColor Green
     }
 }
 
 function ResetCloudConnectorServices {
-    Write-Host "`nRestarting Citrix Worksapce Cloud Agent System" -ForegroundColor Green
+    Write-Host "`nINFO: Restarting Citrix Worksapce Cloud Agent System" -ForegroundColor Green
     Get-Service CitrixWorkspaceCloudAgentSystem | Restart-Service -Force -Verbose
-    Write-Host "Service Status:" -ForegroundColor Green
+    Write-Host "INFO: Service Status:"
     Get-Service CitrixWorkspace* | Select-Object Name, Status | Format-Table
     $RestartComplete = $false
     while (((Get-EventLog Application -Source Citrix* -InstanceId 10000 -after ((Get-Date).AddSeconds(-10))).count -eq 0 ) -and ($RestartComplete -eq $false)) {
-        write-host "Checking for successful transaction with control plane...."
+        write-host "INFO: Checking for successful transaction with control plane...."
         Start-Sleep 10
         if ((Get-EventLog Application -Source Citrix* -InstanceId 10000 -after ((Get-Date).AddSeconds(-10))).count -gt 0) {
             $RestartComplete = $true
         }
     }
-    write-host "Connected to the control plane!"
+    write-host "INFO: Connected to the control plane!" -ForegroundColor Green
 }
 
 function ResetBrokerServices {
-    Write-Host "`nRestarting Broker Services" -ForegroundColor Green
+    Write-Host "`nINFO: Restarting Broker Services" -ForegroundColor Green
     Get-Service CitrixBrokerService | Restart-Service -Force -Verbose
-    Write-Host "Service Status:" -ForegroundColor Green
+    Write-Host "INFO: Service Status:"
     Get-Service CitrixBrokerService | Select-Object Name, Status | Format-Table
     $RestartComplete = $false
     while (((Get-EventLog Application -Source Citrix* -InstanceId 506 -after ((Get-Date).AddSeconds(-10))).count -eq 0 ) -and ($RestartComplete -eq $false)) {
-        write-host "Checking for Broker Service Restart...."
+        write-host "INFO: Checking for Broker Service Restart...."
         Start-Sleep 10
         if ((Get-EventLog Application -Source Citrix* -InstanceId 506 -after ((Get-Date).AddSeconds(-10))).count -gt 0) {
             $RestartComplete = $true
         }
     }
-    write-host "Broker Service successfully restarted!" 
+    write-host "INFO: Broker Service successfully restarted!" -ForegroundColor Green
 
 }
 
 function ValidateSSLStatus {
-    Write-Host "INFO: This is a Citrix $BrokerType"
-    Write-Host "INFO: Performing SSL Status Validation"
+    Write-Host "INFO: This is a Citrix $BrokerType" -ForegroundColor Cyan
+    Write-Host "INFO: Performing SSL Status Validation" -ForegroundColor Green
 
     $ipV4 = Test-Connection -ComputerName (hostname) -Count 1 | Select-Object -ExpandProperty IPV4Address 
     $ipV4ssl = "$ipV4 :443" -replace " ", ""
@@ -200,7 +200,7 @@ function ValidateSSLStatus {
         # Closing PSDrive
         Remove-PSDrive -Name HKCR
         if ($AppId -like "*$GUIDf*") {
-            Write-Host "INFO: A certificate is bound to $($IpV4ssl) with hash: $($Hash) which matches the Citrix Broker GUID $($GUIDf)"
+            Write-Host "INFO: A certificate is bound to $($IpV4ssl) with hash: $($Hash) which matches the Citrix Broker GUID $($GUIDf)" -ForegroundColor Cyan
             Write-Host "INFO: SSL Validation Test: ............PASS" -ForegroundColor Green
         }
         elseif ($AppId -notlike "*$GUIDf*") {
@@ -211,7 +211,7 @@ function ValidateSSLStatus {
 }
 
 function ValidateHTTPStatus {
-    Write-Host "INFO: Performing HTTP Status Validation"
+    Write-Host "INFO: Performing HTTP Status Validation" -ForegroundColor Green
     $XMLHTTPStatus = Get-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -ErrorAction SilentlyContinue
     if ($XMLHttpStatus.XmlServicesEnableNonSsl -eq "0") {
         Write-Host "INFO: XML HTTP is Disabled" -ForegroundColor Green
