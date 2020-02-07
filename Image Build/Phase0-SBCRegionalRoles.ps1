@@ -20,7 +20,7 @@ Function Set-RegionalSettings {
     Set-WinUserLanguageList -LanguageList en-AU -Force
     Set-TimeZone -Id "AUS Eastern Standard Time" -Verbose
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $url = "https://raw.githubusercontent.com/aaronparker/build-azure/master/tools/rds/enAU-Language.xml"
+    $url = "https://raw.githubusercontent.com/JamesKindon/Citrix/master/Image%20Build/enAU-Language.xml"
     Invoke-WebRequest -Uri $url -OutFile "$Target\$(Split-Path $url -Leaf)"
     & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$Target\enAU-Language.xml`""
 }
