@@ -37,5 +37,5 @@ Write-Host "====== Install Microsoft OneDrive\"
 Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/JamesKindon/Citrix/master/Image%20Build/Phase1-MicrosoftOneDrive.ps1'))
 
 #---------OldCalc
-#Start-Process -FilePath "\\mjhomes.local\it\Software\Citrix\oldcalcwin10\Old Calculator for Windows 10.exe" -Wait -PassThru
+#Start-Process -FilePath "\\\Citrix\oldcalcwin10\Old Calculator for Windows 10.exe" -Wait -PassThru
 

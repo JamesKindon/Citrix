@@ -11,15 +11,12 @@ Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JamesKindon/Citrix/mas
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JamesKindon/Citrix/master/FSLogix/AppMasking/Start%20Menu.fxa' -Outfile 'C:\Program Files\FSLogix\Apps\Rules\Start Menu.fxa'
 
 Write-Host "====== Configuring Default File Assocs\"
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/JamesKindon/Citrix/master/Image%20Build/Phase4-DefaultFileAssocs.ps1'))
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/JamesKindon/Citrix/master/Image%20Build/Phase2-DefaultFileAssocs.ps1'))
 
 #---------PhotoViewer
+#Photoviewer Restore
+#Invoke-WebRequest -Uri "https://raw.githubusercontent.com/JamesKindon/Citrix/master/Windows%2010%20Optimisation/Restore_Windows_Photo_Viewer.reg" -UseBasicParsing -OutFile "C:\Tools\Restore_Windows_Photo_Viewer.reg"
+#Start-process -FilePath regsvr32.exe -ArgumentList '"C:\Program Files (x86)\Windows Photo Viewer\PhotoViewer.dll"' -PassThru
+#Invoke-Command {reg import "c:\Tools\Restore_Windows_Photo_Viewer.reg"}
 #---------Desktop Shortcuts
 
-#Phase 3 - Optimize
-#---------Windows 10 Script
-#Invoke-WebRequest -Uri "https://raw.githubusercontent.com/JamesKindon/Citrix/master/Windows%2010%20Optimisation/Invoke-RemoveBuiltinApps.ps1" -UseBasicParsing -OutFile "c:\Tools\Invoke-RemoveBuiltinApps.ps1"
-#& "C:\Tools\Invoke-RemoveBuiltinApps.ps1"
-
-#---------Autoruns
-#---------Citrix Optimizer
