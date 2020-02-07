@@ -72,7 +72,7 @@ function EnableSSL {
  
     # Formating the string to look like a GUID with dash ( - )
     [GUID]$GUIDf = "$GUID"
-    Write-Host -Object "INFO: Citrix Broker Service GUID for $env:computername is: $GUIDf" -foregroundcolor "Cyan";
+    Write-Host -Object "INFO: Citrix Broker Service GUID for $env:computername is: $GUIDf" -foregroundcolor "Cyan"
     # Closing PSDrive
     Remove-PSDrive -Name HKCR
  
@@ -196,7 +196,7 @@ function ValidateSSLStatus {
 
         # Formating the string to look like a GUID with dash ( - )
         [GUID]$GUIDf = "$GUID"
-        Write-Host "INFO: Citrix Broker Service GUID for $env:computername is: $GUIDf";
+        Write-Host "INFO: Citrix Broker Service GUID for $env:computername is: $GUIDf" -foregroundcolor Cyan 
         # Closing PSDrive
         Remove-PSDrive -Name HKCR
         if ($AppId -like "*$GUIDf*") {
