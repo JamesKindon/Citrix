@@ -65,9 +65,9 @@ Param (
 
 function EnableSSL {
     # Fetching registry key to get the Citrix Broker Service GUID
-    New-PSDrive -Name 'HKCR' -PSProvider 'Registry' -Root 'HKEY_CLASSES_ROOT'
+    New-PSDrive -Name 'HKCR' -PSProvider 'Registry' -Root 'HKEY_CLASSES_ROOT' | Out-Null
     $CBS_Guid = Get-ChildItem 'HKCR:\Installer\Products' -Recurse -Ea 0 | Where-Object { $key = $_; $_.GetValueNames() | ForEach-Object { $key.GetValue($_) } | Where-Object { $_ -like '*Citrix Broker Service*' } } | Select-Object Name
-    $CBS_Guid.Name -match "[A-Z0-9]*$"
+    $CBS_Guid.Name -match "[A-Z0-9]*$" | Out-Null
     $GUID = $Matches[0]
  
     # Formating the string to look like a GUID with dash ( - )
