@@ -139,7 +139,7 @@ function EnableHTTP {
 }
 
 function ResetCloudConnectorServices {
-    Write-Host "`nINFO: Restarting Citrix Worksapce Cloud Agent System" -ForegroundColor Green
+    Write-Host "`nINFO: Restarting Citrix Workspace Cloud Agent System" -ForegroundColor Green
     Get-Service CitrixWorkspaceCloudAgentSystem | Restart-Service -Force -Verbose
     Write-Host "INFO: Service Status:"
     Get-Service CitrixWorkspace* | Select-Object Name, Status | Format-Table
