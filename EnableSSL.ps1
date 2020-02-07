@@ -107,7 +107,7 @@ function DisableSSL {
 }
 
 function DisableHTTP {
-    Write-Host "`nDisabling HTTP XML Access" -ForegroundColor Green
+    Write-Host "`nINFO: Disabling HTTP XML Access" -ForegroundColor Green
     $XMLHTTPStatus = Get-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -ErrorAction SilentlyContinue
     if ($null -eq $XMLHTTPStatus) {
         New-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -PropertyType DWORD -Value '0' -Force | Out-Null
@@ -123,7 +123,7 @@ function DisableHTTP {
 }
 
 function EnableHTTP {
-    Write-Host "`nEnable HTTP XML Access" -ForegroundColor Green
+    Write-Host "`nINFO: Enable HTTP XML Access" -ForegroundColor Green
     $XMLHTTPStatus = Get-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -ErrorAction SilentlyContinue
     if ($null -eq $XMLHTTPStatus) {
         New-ItemProperty -Path 'hklm:\Software\citrix\desktopserver' -Name 'XmlServicesEnableNonSsl' -PropertyType DWORD -Value '1' -Force | Out-Null
