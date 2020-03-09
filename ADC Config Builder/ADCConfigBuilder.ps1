@@ -572,7 +572,7 @@ if ($LBAzureMFA.IsPresent) {
 }
 #endregion
 
-#region NPS
+#region ShowConfig
 if ($ShowConfig.IsPresent) {
     Write-Verbose "--------------------------------------------" -Verbose
     Write-Verbose "Displaying Config" -Verbose
