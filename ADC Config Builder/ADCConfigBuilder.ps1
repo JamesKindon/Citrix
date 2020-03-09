@@ -36,13 +36,6 @@ Write-Verbose "Output Config file is: $ConfigFile" -Verbose
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # ADC Setup
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-#$TimeZone = "GMT+11:00-EST-Australia/Sydney"                                                ## CHANGE! -> TimeZone
-#$DNSSuffix = "kindo.com"                                                                    ## CHANGE! -> DNS Suffix
-#$HostName = "NS01"                                                                          ## CHANGE! -> Host Name
-#$SystemGroup = "Domain Admins"                                                              ## System Group
-#$NSIP = "10.2.2.20"                                                                         ## CHANGE! -> NS IP
-#$NSMask = "255.255.255.0"                                                                   ## CHANGE! -> NS IP Mask
-#$NTPServer = "10.1.1.115"                                                                   ## CHANGE! -> NTP Server
 
 $TimeZone                       =   ($Config | Where-Object { $_.Setting -eq "TimeZone" }).Value
 $DNSSuffix                      =   ($Config | Where-Object { $_.Setting -eq "DNSSuffix" }).Value
@@ -54,11 +47,6 @@ $NTPServer                      =   ($Config | Where-Object { $_.Setting -eq "NT
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # ADDS Setup
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-#$AD_Server1_Name = "KINDO-DC01"                                                             ## CHANGE! -> Domain Controller
-#$AD_Server1_IP = "10.1.1.115"                                                               ## CHANGE! -> Domain Controller IP
-#$AD_Server2_Name = "KINDO-DC03"                                                             ## CHANGE! -> Domain Controller
-#$AD_Server2_IP = "10.1.1.116"                                                               ## CHANGE! -> Domain Controller IP
-#$lbvs_DS_VIP_IP = "10.2.2.100"                                                              ## CHANGE! -> ADDS LB VIP
 
 $AD_Server1_Name                =   ($Config | Where-Object { $_.Setting -eq "AD_Server1_Name" }).Value
 $AD_Server1_IP                  =   ($Config | Where-Object { $_.Setting -eq "AD_Server1_IP" }).Value
@@ -79,10 +67,6 @@ $LDAPPolicyNameInsecure         =   ($Config | Where-Object { $_.Setting -eq "LD
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # Auth Profile Setup
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-#$LDAPBase = "DC=Kindo,DC=com"                                                              ## CHANGE! -> LDAP Base DN
-#$LDAPBindDN = "x_ctx_ldap@Kindo.com"                                                       ## CHANGE! -> LDAP Bind Account
-#$LDAPBindPW = "vG0Cfj6XD"                                                                  ## CHANGE! -> LDAP Bind Password
-#$LDAPSearchFilter = '"&(memberOf=CN=Domain Admins,CN=Users,DC=Kindo,DC=com)"'              ## CHANGE! -> LDAP Search Filter
 
 $LDAPBase                       =   ($Config | Where-Object { $_.Setting -eq "LDAPBase" }).Value
 $LDAPBindDN                     =   ($Config | Where-Object { $_.Setting -eq "LDAPBindDN" }).Value
@@ -91,11 +75,6 @@ $LDAPSearchFilter               =   ($Config | Where-Object { $_.Setting -eq "LD
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # WEM Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-#$WEM_Broker1_Name = "KINDO-DDC"                                                            ## CHANGE! -> WEM Broker Name
-#$WEM_Broker1_IP = "10.1.1.230"                                                             ## CHANGE! -> WEM Broker IP
-#$WEM_Broker2_Name = "KINDO-DDC2"                                                           ## CHANGE! -> WEM Broker Name
-#WEM_Broker2_IP = "10.1.1.231"                                                             ## CHANGE! -> WEM Broker IP
-#$Lbvs_WEM_VIP_IP = "10.2.2.101"                                                            ## CHANGE! -> WEM Load Balanced VIP IP
 
 $WEM_Broker1_Name               =   ($Config | Where-Object { $_.Setting -eq "WEM_Broker1_Name" }).Value
 $WEM_Broker1_IP                 =   ($Config | Where-Object { $_.Setting -eq "WEM_Broker1_IP" }).Value
@@ -114,16 +93,6 @@ $lbvs_WEM_AgentSyncCacheData    =   ($Config | Where-Object { $_.Setting -eq "lb
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # StoreFront Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-#$SF_Server1_Name = "KINDO-DDC"                                                             ## CHANGE! -> StoreFront Server Name
-#$SF_Server1_IP = "10.1.1.230"                                                              ## CHANGE! -> StoreFront Server IP
-#$SF_Server2_Name = "KINDO-DDC2"                                                            ## CHANGE! -> StoreFront Server Name
-#$SF_Server2_IP = "10.1.1.231"                                                              ## CHANGE! -> StoreFront Server IP
-#$Monitor_SF_Store = "ProductionApps"                                               ## CHANGE! -> StoreFront Store    
-#$Lbvs_SF_VIP_IP = "10.2.2.102"                                                             ## CHANGE! -> StoreFront Load Balanced VIP IP
-#$SF_RedirectURL = "https://apps.Kindo.com"                                                 ## CHANGE! -> StoreFront Redirect URL
-#$SF_Cert = "Kindo-wildcard-sha2-exp2018"                                                   ## CHANGE! -> StoreFront Cert Name
-#$SF_RedirUrl = '"\"https://apps.Kindo.com/Citrix/ProductionAppsWeb\""'                     ## CHANGE! -> StoreFront Redirect URL
-#$SF_ResPol_Pattern = '"HTTP.REQ.HOSTNAME.EQ(\"StoreFront\") && http.REQ.URL.EQ(\"/\")"'    ## CHANGE! -> 
 
 $SF_Server1_Name                =   ($Config | Where-Object { $_.Setting -eq "SF_Server1_Name" }).Value
 $SF_Server1_IP                  =   ($Config | Where-Object { $_.Setting -eq "SF_Server1_IP" }).Value
@@ -145,13 +114,6 @@ $SF_ResPol                      =   ($Config | Where-Object { $_.Setting -eq "SF
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # Director Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-#$Dir_Server1_Name = "KINDO-DDC"                                                            ## CHANGE! -> 
-#$Dir_Server1_IP = "10.1.1.230"                                                             ## CHANGE! -> 
-#$Dir_Server2_Name = "KINDO-DDC2"                                                           ## CHANGE! -> 
-#$Dir_Server2_IP = "10.1.1.231"                                                             ## CHANGE! -> 
-#$Lbvs_Dir_VIP_IP = "10.2.2.103"                                                            ## CHANGE! -> 
-#$Dir_RedirectURL = "https://director.Kindo.com"                                            ## CHANGE! -> 
-#$Dir_Cert = "Kindo-wildcard-sha2-exp2018"                                                  ## CHANGE! -> 
 
 $Dir_Server1_Name               =   ($Config | Where-Object { $_.Setting -eq "Dir_Server1_Name" }).Value
 $Dir_Server1_IP                 =   ($Config | Where-Object { $_.Setting -eq "Dir_Server1_IP" }).Value
@@ -172,14 +134,6 @@ $Dir_Respol_Pattern             =   ($Config | Where-Object { $_.Setting -eq "Di
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # Azure MFA NPS Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-#$AzureMFA_Server1_Name = "KINDO-DDC"                                                   ## CHANGE! -> 
-#$AzureMFA_Server1_IP = "10.1.1.230"                                                    ## CHANGE! -> 
-#$AzureMFA_Server2_Name = "KINDO-DDC2"                                                  ## CHANGE! -> 
-#$AzureMFA_Server2_IP = "10.1.1.231"                                                    ## CHANGE! -> 
-#$Lbvs_AzureMFA_VIP_IP = "10.2.2.103"                                                       ## CHANGE! -> 
-#$AzureMFA_Mon_UserName = "radiusmonitor"                                               ## CHANGE! -> Monitor Username
-#$AzureMFA_Mon_Password = "dummypassword"                                               ## CHANGE! -> Monitor Password - can be dummy if using ping-username technique
-#$AzureMFA_RADIUS_Key = "entersomethinghere"                                                ## CHANGE! -> RADIUS PreShared Key
 
 $AzureMFA_Server1_Name          =   ($Config | Where-Object { $_.Setting -eq "AzureMFA_Server1_Name" }).Value
 $AzureMFA_Server1_IP            =   ($Config | Where-Object { $_.Setting -eq "AzureMFA_Server1_IP" }).Value
@@ -628,12 +582,4 @@ if ($ShowConfig.IsPresent) {
 #endregion
 
 Write-Output "save ns config" | Out-File -Append $ConfigFile
-
-
-
-
-#Route Add  0.0.0.0 0.0.0.0 10.30.1.254
-#Route Add  10.0.0.0 255.0.0.0 10.20.2.254
-#Route Add  172.16.0.0 255.240.0.0 10.20.2.254
-#Route Add  192.168.0.0 255.255.0.0 10.20.2.254
 
