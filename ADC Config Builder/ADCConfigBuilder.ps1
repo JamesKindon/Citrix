@@ -28,9 +28,6 @@ Write-Verbose "Importing CSV" -Verbose
 $Config = Import-CSV -Path $CSV
 Write-Verbose "Output Config file is: $ConfigFile" -Verbose
 
-#$Config = Import-CSV -Path "C:\Users\James.Kindon\OneDrive\PowerShell\NetScaler\ADCConfig.csv"
-#$ConfigFile = "~\Desktop\Config.txt"
-
 #region variables
 # ====================================================================================================================================================
 # Variables - Set Per Customer
