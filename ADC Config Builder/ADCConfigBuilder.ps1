@@ -54,6 +54,8 @@ $AD_Server2_Name                =   ($Config | Where-Object { $_.Setting -eq "AD
 $AD_Server2_IP                  =   ($Config | Where-Object { $_.Setting -eq "AD_Server2_IP" }).Value
 $lbvs_DS_VIP_IP                 =   ($Config | Where-Object { $_.Setting -eq "lbvs_DS_VIP_IP" }).Value
 
+$mon_DNS_53                     =   ($Config | Where-Object { $_.Setting -eq "mon_DNS_53" }).Value
+$mon_LDAP                       =   ($Config | Where-Object { $_.Setting -eq "mon_LDAP" }).Value
 $svcg_DNS_53                    =   ($Config | Where-Object { $_.Setting -eq "svcg_DNS_53" }).Value
 $svcg_LDAP_389                  =   ($Config | Where-Object { $_.Setting -eq "svcg_LDAP_389" }).Value
 $svcg_LDAPS_636                 =   ($Config | Where-Object { $_.Setting -eq "svcg_LDAPS_636" }).Value
@@ -72,6 +74,8 @@ $LDAPBase                       =   ($Config | Where-Object { $_.Setting -eq "LD
 $LDAPBindDN                     =   ($Config | Where-Object { $_.Setting -eq "LDAPBindDN" }).Value
 $LDAPBindPW                     =   ($Config | Where-Object { $_.Setting -eq "LDAPBindPW" }).Value
 $LDAPSearchFilter               =   ($Config | Where-Object { $_.Setting -eq "LDAPSearchFilter" }).Value
+$DNS_Query                      =   ($Config | Where-Object { $_.Setting -eq "DNS_Query" }).Value
+$DNS_Query_IP                   =   ($Config | Where-Object { $_.Setting -eq "DNS_Query_IP" }).Value
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # WEM Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -460,6 +464,7 @@ if ($LBADDS.IsPresent) {
     
     $LDAPServerIP = $lbvs_DS_VIP_IP
 
+    #Server
     Write-Verbose "Setting AD Controller Name: $AD_Server1_Name" -Verbose
     Write-Verbose "Setting AD Controller IP $AD_Server1_Name IP: $AD_Server1_IP" -Verbose
     Write-Verbose "Setting AD Controller Name: $AD_Server2_Name" -Verbose
@@ -468,6 +473,11 @@ if ($LBADDS.IsPresent) {
     Write-Output "add server $AD_Server1_Name $AD_Server1_IP -comment ""Domain Controller""" | Out-File -Append $ConfigFile
     Write-Output "add server $AD_Server2_Name $AD_Server2_IP -comment ""Domain Controller""" | Out-File -Append $ConfigFile
 
+    #Monitors
+    Write-Output "add lb monitor $mon_LDAP LDAP -scriptName nsldap.pl -dispatcherIP 127.0.0.1 -dispatcherPort 3013 -password $LDAPBindPW -encrypted -encryptmethod ENCMTHD_3 -LRTM DISABLED -secure YES -baseDN $LDAPBase -bindDN $LDAPBindDN -filter cn=builtin" | Out-File -Append $ConfigFile
+    Write-Output "add lb monitor $mon_DNS_53 DNS -query $DNS_Query -queryType Address -LRTM DISABLED -IPAddress $DNS_Query_IP"
+
+    #Service Group
     Write-Verbose "Setting DNS Service Group Name: $svcg_DNS_53" -Verbose
     Write-Verbose "Setting LDAP Service Group Name: $svcg_LDAP_389" -Verbose
     Write-Verbose "Setting LDAPS Service Group Name: $svcg_LDAPS_636" -Verbose
@@ -476,6 +486,11 @@ if ($LBADDS.IsPresent) {
     Write-Output "add serviceGroup $svcg_LDAP_389 TCP -comment ""LDAP Service Group""" | Out-File -Append $ConfigFile
     Write-Output "add serviceGroup $svcg_LDAPS_636 SSL_TCP -comment ""LDAPS Service Group""" | Out-File -Append $ConfigFile
 
+    Write-Output "bind serviceGroup $svcg_DNS_53 -monitorName $mon_DNS_53" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_LDAP_389 -monitorName $mon_LDAP" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_LDAP_636 -monitorName $mon_LDAP" | Out-File -Append $ConfigFile
+
+    #Load Balancers
     Write-Verbose "Setting ADDS Load Balancer VIP IP: $lbvs_DS_VIP_IP" -Verbose
     Write-Verbose "Setting DNS Load Balancer Name: $lbvs_DNS_53" -Verbose
     Write-Verbose "Setting LDAP Load Balancer Name: $lbvs_LDAP_389" -Verbose

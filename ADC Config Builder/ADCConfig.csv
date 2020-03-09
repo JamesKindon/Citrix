@@ -17,6 +17,8 @@ LDAPBase,,LDAP Base DN
 LDAPBindDN,,LDAP Bind account
 LDAPBindPW,,LDAP Bind Password
 LDAPSearchFilter,,LDAP Search Filter
+DNS_Query,,Monitor DNS Query
+DNS_Query_IP,,Monitor DNS IP
 #------WEM Custom------,#------WEM Custom------,#------WEM Custom------
 WEM_Broker1_Name,,Server - WEM Broker
 WEM_Broker1_IP,,Server - WEM Broker IP
@@ -79,6 +81,8 @@ Dir_RedirURL,"""\""https://director/director/Logon.aspx\""""",Responder Action -
 Dir_ResPol,respolicy_Director,Responder Policy - Director
 Dir_Respol_Pattern,"""HTTP.REQ.HOSTNAME.EQ(\""director\"") && http.REQ.URL.EQ(\""/\"")""",Responder Policy - Director
 #------ADDS Defaults------,#------ADDS Defaults------,#------ADDS Defaults------
+mon_DNS_53,mon_DNS_53,Monitor DNS
+mon_LDAP,mon_LDAP_mon,Monitor LDAP
 svcg_DNS_53,svcg_DNS_53,Service Group - DNS Port 53
 svcg_LDAP_389,svcg_LDAP_389,Service Group - LDAP Port 389
 svcg_LDAPS_636,svcg_LDAPS_636,Service Group - LDAPS Port 636
