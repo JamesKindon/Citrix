@@ -1,0 +1,95 @@
+Setting,Value,Comments
+#------ADC Custom------,#------ADC Custom------,#------ADC Custom------
+TimeZone,GMT+11:00-EST-Australia/Sydney,ADC TimeZone
+DNSSuffix,,ADC Primary DNS Suffix
+HostName,,ADC hostname
+SystemGroup,Domain Admins,ADC SystemGroup
+NSIP,,ADC Netscaler IP
+NSMask,,ADC Subnet Mask
+NTPServer,,ADC NTP Server
+#------Directory Services Custom------,#------Directory Services Custom------,#------Directory Services Custom------
+AD_Server1_Name,,Server - Domain Controller
+AD_Server1_IP,,Server - Domain Controller IP
+AD_Server2_Name,,Server - Domain Controller
+AD_Server2_IP,,Server - Domain Controller IP
+lbvs_DS_VIP_IP,,Load Balancer - Directory Services IP
+LDAPBase,,LDAP Base DN
+LDAPBindDN,,LDAP Bind account
+LDAPBindPW,,LDAP Bind Password
+LDAPSearchFilter,,LDAP Search Filter
+#------WEM Custom------,#------WEM Custom------,#------WEM Custom------
+WEM_Broker1_Name,,Server - WEM Broker
+WEM_Broker1_IP,,Server - WEM Broker IP
+WEM_Broker2_Name,,Server - WEM Broker
+WEM_Broker2_IP,,Server - WEM Broker IP
+Lbvs_WEM_VIP_IP,,Load Balancer - WEM IP
+#------StoreFront Custom------,#------StoreFront Custom------,#------StoreFront Custom------
+SF_Server1_Name,,Server - StoreFront
+SF_Server1_IP,,Server - StoreFront IP
+SF_Server2_Name,,Server - StoreFront
+SF_Server2_IP,,Server - StoreFront IP
+Monitor_SF_Store,,StoreFront - Store Name
+Lbvs_SF_VIP_IP,,Load Balancer - StoreFront IP
+SF_RedirectURL,https://apps.Kindo.com,Redirect - StoreFront
+SF_RedirUrl,"""\""https://apps.Kindo.com/Citrix/ProductionAppsWeb\""""",Redirect - StoreFront
+SF_ResPol_Pattern,"""HTTP.REQ.HOSTNAME.EQ(\""storefront\"") && http.REQ.URL.EQ(\""/\"")""",Responder Policy Pattern - StoreFront
+#------Director Custom------,#------Director Custom------,#------Director Custom------
+Dir_Server1_Name,,Server - Director
+Dir_Server1_IP,,Server - Director IP
+Dir_Server2_Name,,Server - Director
+Dir_Server2_IP,,Server - Director IP
+Lbvs_Dir_VIP_IP,,Load Balancer - Director IP
+Dir_RedirectURL,https://director.Kindo.com,Redirect - Director
+Dir_Cert,Kindo-wildcard-sha2-exp2018,Certificate - Director
+#------Azure MFA Custom------,#------Azure MFA Custom------,#------Azure MFA Custom------
+AzureMFA_Server1_Name,,Server - AzureMFA NPS
+AzureMFA_Server1_IP,,Server - AzureMFA NPS IP
+AzureMFA_Server2_Name,,Server - AzureMFA NPS
+AzureMFA_Server2_IP,,Server - AzureMFA NPS IP
+Lbvs_AzureMFA_VIP_IP,,Load Balancer - AzureMFA IP
+AzureMFA_Mon_UserName,radiusmonitor,Azure MFA RADIUS Monitor Username
+AzureMFA_Mon_Password,dummypassword,Azure MFA RADIUS Monitor Password
+AzureMFA_RADIUS_Key,entersomethinghere,Azure MFA RADIUS Key
+#----------------------------------------------,#----------------------------------------------,#----------------------------------------------
+#--------------Defaults-----------------------,#--------------Defaults-----------------------,#--------------Defaults-----------------------
+#----------------------------------------------,#----------------------------------------------,#----------------------------------------------
+#------WEM Defaults------,#------WEM Defaults------,#------WEM Defaults------
+svcg_WEM_brokerAdmin,svcg_WEM_BrokerAdmin_8284,Service Group - WEM Broker Admin Port 8284
+svcg_WEM_AgentSync,svcg_WEM_AgentSync_8285,Service Group - WEM Agent Sync Port 8285
+svcg_WEM_AgentBroker,svcg_WEM_AgentBroker_8286,Service Group - WEM Agent Broker Port 8286
+svcg_WEM_AgentSyncCacheData,svcg_WEM_AgentSync_8288,Service Group - WEM Agent Sync Port 8288
+lbvs_WEM_BrokerAdmin,lbvs_WEM_BrokerAdmin_8284,Load Balancer - WEM Broker Admin Port 8284
+lbvs_WEM_AgentBroker,lbvs_WEM_AgentBroker_8286,Load Balancer - WEM Agent Broker Port 8285
+lbvs_WEM_AgentSync,lbvs_WEM_AgentSync_8285,Load Balancer - WEM Agent Sync Port 8286
+lbvs_WEM_AgentSyncCacheData,lbvs_WEM_AgentSyncCacheData_8288,Load Balancer - WEM Agent Sync Port 8288
+#------StoreFront Defaults------,#------StoreFront Defaults------,#------StoreFront Defaults------
+Monitor_StoreFront,mon_StoreFront,Monitor - StoreFront
+svcg_Citrix_SF_80,svcg_Citrix_SF_80,Service Group - StoreFront Port 80
+svcg_Citrix_SF_443,svcg_Citrix_SF_443,Service Group - StoreFront Port 443
+lbvs_SF_VIP_Name,lbvs_Citrix_SF_443,Load Balancer - StoreFront Port 443
+SF_RespAct,respact_storefront_redirect,Responder Action - StoreFront
+SF_ResPol,respolicy_storefront,Responder Policy - StoreFront
+#------Director Defaults------,#------Director Defaults------,#------Director Defaults------
+svcg_Citrix_Director_80,svcg_Citrix_Dir_80,Service Group - Director Port 80
+svcg_Citrix_Director_443,svcg_Citrix_Dir_443,Service Group - Director Port 443
+lbvs_Dir_VIP_Name,lbvs_Citrix_Director_443,Load Balancer - Director Port 443
+Monitor_Director,mon_Director,Monitor - Director
+Dir_RespAct,respact_Director_redirect,Responder Action - Director
+Dir_RedirURL,"""\""https://director/director/Logon.aspx\""""",Responder Action - Director
+Dir_ResPol,respolicy_Director,Responder Policy - Director
+Dir_Respol_Pattern,"""HTTP.REQ.HOSTNAME.EQ(\""director\"") && http.REQ.URL.EQ(\""/\"")""",Responder Policy - Director
+#------ADDS Defaults------,#------ADDS Defaults------,#------ADDS Defaults------
+svcg_DNS_53,svcg_DNS_53,Service Group - DNS Port 53
+svcg_LDAP_389,svcg_LDAP_389,Service Group - LDAP Port 389
+svcg_LDAPS_636,svcg_LDAPS_636,Service Group - LDAPS Port 636
+lbvs_DNS_53,lbvs_DNS_53,Load Balancer - DNS Port 53
+lbvs_LDAP_389,lbvs_LDAP_389,Load Balancer - LDAP Port 389
+lbvs_LDAP_636,lbvs_LDAP_636,Load Balancer - LDAPS Port 636
+LDAPActionName,ldaps_auth_DomainAdmins,Auth Action - LDAPS Domain Admins
+LDAPPolicyName,auth_ldaps_DomainAdmins,Auth Policy - LDAPS Domain Admins
+LDAPActionNameInsecure,ldap_auth_DomainAdmins,Auth Action - LDAP Domain Admins
+LDAPPolicyNameInsecure,auth_ldap_DomainAdmins,Auth Policy - LDAP Domain Admins
+#------AzureMFA Defaults------,#------AzureMFA Defaults------,#------AzureMFA Defaults------
+svcg_AzureMFA_Radius_1812,svcg_AzureMFA_RADIUS_1812,Service Group - AzureMFA Radius Port 1812
+lbvs_AzureMFA_VIP_Name,lbvs_AzureMFA_RADIUS_1812,Load Balancer - AzureMFA Radius Port 1812
+Monitor_AzureMFA,mon_AzureMFA_NPS,Monitor - AzureMFA
