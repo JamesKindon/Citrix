@@ -12,6 +12,8 @@ Param(
     [Parameter(Mandatory = $false)]
     [Switch]$AuthProfile,
     [Parameter(Mandatory = $false)]
+    [Switch]$LBXML,
+    [Parameter(Mandatory = $false)]
     [Switch]$LBAzureMFA,
     [Parameter(Mandatory = $True)]
     [String]$CSV,
@@ -36,7 +38,6 @@ Write-Verbose "Output Config file is: $ConfigFile" -Verbose
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # ADC Setup
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
 $TimeZone                       =   ($Config | Where-Object { $_.Setting -eq "TimeZone" }).Value
 $DNSSuffix                      =   ($Config | Where-Object { $_.Setting -eq "DNSSuffix" }).Value
 $HostName                       =   ($Config | Where-Object { $_.Setting -eq "HostName" }).Value
@@ -47,7 +48,6 @@ $NTPServer                      =   ($Config | Where-Object { $_.Setting -eq "NT
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # ADDS Setup
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
 $AD_Server1_Name                =   ($Config | Where-Object { $_.Setting -eq "AD_Server1_Name" }).Value
 $AD_Server1_IP                  =   ($Config | Where-Object { $_.Setting -eq "AD_Server1_IP" }).Value
 $AD_Server2_Name                =   ($Config | Where-Object { $_.Setting -eq "AD_Server2_Name" }).Value
@@ -69,7 +69,6 @@ $LDAPPolicyNameInsecure         =   ($Config | Where-Object { $_.Setting -eq "LD
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # Auth Profile Setup
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
 $LDAPBase                       =   ($Config | Where-Object { $_.Setting -eq "LDAPBase" }).Value
 $LDAPBindDN                     =   ($Config | Where-Object { $_.Setting -eq "LDAPBindDN" }).Value
 $LDAPBindPW                     =   ($Config | Where-Object { $_.Setting -eq "LDAPBindPW" }).Value
@@ -79,7 +78,6 @@ $DNS_Query_IP                   =   ($Config | Where-Object { $_.Setting -eq "DN
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # WEM Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
 $WEM_Broker1_Name               =   ($Config | Where-Object { $_.Setting -eq "WEM_Broker1_Name" }).Value
 $WEM_Broker1_IP                 =   ($Config | Where-Object { $_.Setting -eq "WEM_Broker1_IP" }).Value
 $WEM_Broker2_Name               =   ($Config | Where-Object { $_.Setting -eq "WEM_Broker2_Name" }).Value
@@ -97,7 +95,6 @@ $lbvs_WEM_AgentSyncCacheData    =   ($Config | Where-Object { $_.Setting -eq "lb
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # StoreFront Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
 $SF_Server1_Name                =   ($Config | Where-Object { $_.Setting -eq "SF_Server1_Name" }).Value
 $SF_Server1_IP                  =   ($Config | Where-Object { $_.Setting -eq "SF_Server1_IP" }).Value
 $SF_Server2_Name                =   ($Config | Where-Object { $_.Setting -eq "SF_Server2_Name" }).Value
@@ -114,11 +111,9 @@ $svcg_Citrix_SF_443             =   ($Config | Where-Object { $_.Setting -eq "sv
 $lbvs_SF_VIP_Name               =   ($Config | Where-Object { $_.Setting -eq "lbvs_SF_VIP_Name" }).Value                                                  
 $SF_RespAct                     =   ($Config | Where-Object { $_.Setting -eq "SF_RespAct" }).Value                                                
 $SF_ResPol                      =   ($Config | Where-Object { $_.Setting -eq "SF_ResPol" }).Value    
-
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 # Director Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
 $Dir_Server1_Name               =   ($Config | Where-Object { $_.Setting -eq "Dir_Server1_Name" }).Value
 $Dir_Server1_IP                 =   ($Config | Where-Object { $_.Setting -eq "Dir_Server1_IP" }).Value
 $Dir_Server2_Name               =   ($Config | Where-Object { $_.Setting -eq "Dir_Server2_Name" }).Value
@@ -136,9 +131,24 @@ $Dir_RedirURL                   =   ($Config | Where-Object { $_.Setting -eq "Di
 $Dir_ResPol                     =   ($Config | Where-Object { $_.Setting -eq "Dir_ResPol" }).Value                                                         
 $Dir_Respol_Pattern             =   ($Config | Where-Object { $_.Setting -eq "Dir_Respol_Pattern" }).Value 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
+# Controller XML Load Balancing
+#-----------------------------------------------------------------------------------------------------------------------------------------------------
+$Controller1_Name               =   ($Config | Where-Object { $_.Setting -eq "Controller1_Name" }).Value
+$Controller1_IP                 =   ($Config | Where-Object { $_.Setting -eq "Controller1_IP" }).Value
+$Controller2_Name               =   ($Config | Where-Object { $_.Setting -eq "Controller2_Name" }).Value
+$Controller2_IP                 =   ($Config | Where-Object { $_.Setting -eq "Controller2_IP" }).Value
+$lbvs_Controller_XML_IP         =   ($Config | Where-Object { $_.Setting -eq "lbvs_Controller_XML_IP" }).Value
+$Controller_Cert                =   ($Config | Where-Object { $_.Setting -eq "Controller_Cert" }).Value
+
+$svcg_Controller_XML_80         =   ($Config | Where-Object { $_.Setting -eq "svcg_Controller_XML_80" }).Value
+$svcg_Controller_XML_443        =   ($Config | Where-Object { $_.Setting -eq "svcg_Controller_XML_443" }).Value
+$lbvs_Controller_XML_80         =   ($Config | Where-Object { $_.Setting -eq "lbvs_Controller_XML_80" }).Value
+$lbvs_Controller_XML_443        =   ($Config | Where-Object { $_.Setting -eq "lbvs_Controller_XML_443" }).Value
+$mon_Controller_XML             =   ($Config | Where-Object { $_.Setting -eq "mon_Controller_XML" }).Value
+$mon_Controller_XML_Sec         =   ($Config | Where-Object { $_.Setting -eq "mon_Controller_XML_Sec" }).Value
+#-----------------------------------------------------------------------------------------------------------------------------------------------------
 # Azure MFA NPS Load Balancing
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
-
 $AzureMFA_Server1_Name          =   ($Config | Where-Object { $_.Setting -eq "AzureMFA_Server1_Name" }).Value
 $AzureMFA_Server1_IP            =   ($Config | Where-Object { $_.Setting -eq "AzureMFA_Server1_IP" }).Value
 $AzureMFA_Server2_Name          =   ($Config | Where-Object { $_.Setting -eq "AzureMFA_Server2_Name" }).Value
@@ -542,6 +552,71 @@ if ($AuthProfile.IsPresent) {
     Write-Output "add authentication ldapPolicy $LDAPActionNameInsecure ns_true $LDAPActionNameInsecure" | Out-File -Append $ConfigFile
 
     Write-Output "bind system global $LDAPPolicyName -priority 100" | Out-File -Append $ConfigFile
+}
+#endregion
+
+#region Controller XML
+if ($LBXML.IsPresent) {
+    Write-Verbose "--------------------------------------------" -Verbose
+    Write-Verbose "Writing Controller XML Load Balancing" -Verbose
+    Write-Verbose "--------------------------------------------" -Verbose
+    # ============================================================================
+    # Controller Load Balancing
+    # ============================================================================
+    
+    #Servers
+    Write-Verbose "Setting XML Controller Server Name: $Controller1_Name" -Verbose
+    Write-Verbose "Setting XML Controller Server $Controller1_Name IP: $Controller1_IP" -Verbose
+    Write-Verbose "Setting XML Controller Server Name: $Controller2_Name" -Verbose
+    Write-Verbose "Setting XML Controller Server $Controller2_Name IP: $Controller2_IP" -Verbose
+
+    Write-Output "add server $Controller1_Name $Controller1_IP" | Out-File -Append $ConfigFile
+    Write-Output "add server $Controller2_Name $Controller2_IP" | Out-File -Append $ConfigFile
+
+    #Service Groups
+    Write-Verbose "Setting XML Controller Service Group Name: $svcg_Controller_XML_80" -Verbose
+    Write-Verbose "Setting XML Controller Service Group Name: $svcg_Controller_XML_443" -Verbose
+    Write-Output "add serviceGroup $svcg_Controller_XML_80 HTTP -maxClient 0 -maxReq 0 -cip DISABLED -usip NO -useproxyport YES -cltTimeout 180 -svrTimeout 360 -CKA NO -TCPB NO -CMP YES" | Out-File -Append $ConfigFile
+    Write-Output "add serviceGroup $svcg_Controller_XML_443 SSL -maxClient 0 -maxReq 0 -cip DISABLED -usip NO -useproxyport YES -cltTimeout 180 -svrTimeout 360 -CKA NO -TCPB NO -CMP YES" | Out-File -Append $ConfigFile
+
+    Write-Output "bind serviceGroup $svcg_Controller_XML_80 $Controller1_Name 80" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_Controller_XML_80 $Controller2_Name 80" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_Controller_XML_443 $Controller1_Name 443" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_Controller_XML_443 $Controller2_Name 443" | Out-File -Append $ConfigFile
+
+    Write-Output "bind ssl serviceGroup $svcg_Controller_XML_443 -eccCurveName P_384" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl serviceGroup $svcg_Controller_XML_443 -eccCurveName P_256" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl serviceGroup $svcg_Controller_XML_443 -eccCurveName P_224" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl serviceGroup $svcg_Controller_XML_443 -eccCurveName P_521" | Out-File -Append $ConfigFile
+
+    #Load Balancers
+    Write-Verbose "Setting XML Controller Load Balancer Name: $lbvs_Controller_XML_80" -Verbose
+    Write-Verbose "Setting XML Controller Load Balancer Name: $lbvs_Controller_XML_443" -Verbose
+    Write-Verbose "Setting XML Controller Load Balancer VIP IP: $lbvs_Controller_XML_IP" -Verbose
+    Write-Verbose "Setting XML Controller Cert: $Controller_Cert" -Verbose
+    
+    Write-Output "add lb vserver $lbvs_Controller_XML_80 HTTP $lbvs_Controller_XML_IP  80 -persistenceType NONE -cltTimeout 180" | Out-File -Append $ConfigFile
+    Write-Output "add lb vserver $lbvs_Controller_XML_443 SSL $lbvs_Controller_XML_IP 443 -persistenceType NONE -cltTimeout 180" | Out-File -Append $ConfigFile
+
+    Write-Output "bind lb vserver $lbvs_Controller_XML_443 $svcg_Controller_XML_443" | Out-File -Append $ConfigFile
+    Write-Output "bind lb vserver $lbvs_Controller_XML_80 $svcg_Controller_XML_80" | Out-File -Append $ConfigFile
+
+    Write-Output "bind ssl vserver $lbvs_Controller_XML_443 -eccCurveName P_384" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_Controller_XML_443 -eccCurveName P_256" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_Controller_XML_443 -eccCurveName P_224" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_Controller_XML_443 -eccCurveName P_521" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_Controller_XML_443 -certkeyName $Controller_Cert" | Out-File -Append $ConfigFile
+
+    #Monitors
+    Write-Verbose "Setting XML Controller Monitor Name: $mon_Controller_XML" -Verbose
+    Write-Verbose "Setting XML Controller Monitor Name: $mon_Controller_XML_Sec" -Verbose
+
+    Write-Output "add lb monitor $mon_Controller_XML CITRIX-XD-DDC -LRTM DISABLED" | Out-File -Append $ConfigFile
+    Write-Output "add lb monitor $mon_Controller_XML_Sec CITRIX-XD-DDC -LRTM DISABLED -secure YES" | Out-File -Append $ConfigFile
+
+    Write-Output "bind serviceGroup $svcg_Controller_XML_80 -monitorName $mon_Controller_XML" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_Controller_XML_443 -monitorName $mon_Controller_XML_Sec" | Out-File -Append $ConfigFile
+
 }
 #endregion
 

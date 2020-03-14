@@ -33,7 +33,7 @@ SF_Server2_IP,,Server - StoreFront IP
 Monitor_SF_Store,,StoreFront - Store Name
 Lbvs_SF_VIP_IP,,Load Balancer - StoreFront IP
 SF_RedirectURL,https://apps.Kindo.com,Redirect - StoreFront
-SF_RedirUrl,"""\""https://apps.Kindo.com/Citrix/ProductionAppsWeb\""""",Redirect - StoreFront
+SF_RedirUrl,"""\""https://apps.domain.com/Citrix/StoreWeb\""""",Redirect - StoreFront
 SF_ResPol_Pattern,"""HTTP.REQ.HOSTNAME.EQ(\""storefront\"") && http.REQ.URL.EQ(\""/\"")""",Responder Policy Pattern - StoreFront
 #------Director Custom------,#------Director Custom------,#------Director Custom------
 Dir_Server1_Name,,Server - Director
@@ -41,8 +41,15 @@ Dir_Server1_IP,,Server - Director IP
 Dir_Server2_Name,,Server - Director
 Dir_Server2_IP,,Server - Director IP
 Lbvs_Dir_VIP_IP,,Load Balancer - Director IP
-Dir_RedirectURL,https://director.Kindo.com,Redirect - Director
-Dir_Cert,Kindo-wildcard-sha2-exp2018,Certificate - Director
+Dir_RedirectURL,https://director.domain.com,Redirect - Director
+Dir_Cert,,Certificate - Director
+#------XML LB------,#------XML LB------,#------XML LB------
+Controller1_Name,,Server - Controller 
+Controller1_IP,,Server - Controller  IP
+Controller2_Name,,Server - Controller 
+Controller2_IP,,Server - Controller IP
+lbvs_Controller_XML_IP,,Load Balancer - XML IP
+Controller_Cert,,Certificate - XML
 #------Azure MFA Custom------,#------Azure MFA Custom------,#------Azure MFA Custom------
 AzureMFA_Server1_Name,,Server - AzureMFA NPS
 AzureMFA_Server1_IP,,Server - AzureMFA NPS IP
@@ -97,3 +104,10 @@ LDAPPolicyNameInsecure,auth_ldap_DomainAdmins,Auth Policy - LDAP Domain Admins
 svcg_AzureMFA_Radius_1812,svcg_AzureMFA_RADIUS_1812,Service Group - AzureMFA Radius Port 1812
 lbvs_AzureMFA_VIP_Name,lbvs_AzureMFA_RADIUS_1812,Load Balancer - AzureMFA Radius Port 1812
 Monitor_AzureMFA,mon_AzureMFA_NPS,Monitor - AzureMFA
+#------XML Defaults------,#------XML Defaults------,#------XML Defaults------
+svcg_Controller_XML_80,svcg_Controller_XML_80,Service Group - XML Load Balancing
+svcg_Controller_XML_443,svcg_Controller_XML_443,Service Group - XML Load Balancing
+lbvs_Controller_XML_80,lbvs_Controller_XML_80,Load Balancer - XML Load Balancing
+lbvs_Controller_XML_443,lbvs_Controller_XML_443,Load Balancer - XML Load Balancing
+mon_Controller_XML,mon_Controller_XML,Monitor XML
+mon_Controller_XML_Sec,mon_Controller_XML_Sec,Monitor XML Sec
