@@ -35,9 +35,15 @@
  <Exclude Copy="0">AppData\Local\Microsoft\MSOIdentityCRL\Tracing</Exclude>
  <Exclude Copy="0">AppData\Local\Microsoft\OneNote\16.0\Backup</Exclude>
  <Exclude Copy="0">AppData\Local\CrashDumps</Exclude>
- <Exclude Copy="0">AppData\Local\nuget\Cache</Exclude>
- <Exclude Copy="0">AppData\Local\Apple</Exclude>
- <Exclude Copy="0">AppData\Local\Apple Computer</Exclude>
+ <Exclude Copy="0">AppData\Local\SquirrelTemp</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Teams\Current\Locales</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Teams\Packages\SquirrelTemp</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Teams\current\resources\locales</Exclude>
+ <Exclude Copy="0">AppData\Local\Microsoft\Teams\Current\Locales</Exclude>
+ <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Service Worker\CacheStorage</Exclude>
+ <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Application Cache</Exclude>
+ <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Cache</Exclude>
+ <Exclude Copy="0">AppData\Roaming\Microsoft Teams\Logs</Exclude>
 </Excludes>
   
 <Includes>
