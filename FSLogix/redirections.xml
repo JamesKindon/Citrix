@@ -44,6 +44,7 @@
  <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Application Cache</Exclude>
  <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Cache</Exclude>
  <Exclude Copy="0">AppData\Roaming\Microsoft Teams\Logs</Exclude>
+ <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\media-stack</Exclude>
 </Excludes>
   
 <Includes>
