@@ -26,7 +26,7 @@ IF ERRORLEVEL 1060 (
     REM Check for Upgraded Install
     IF EXIST "C:\Program Files (x86)\Norskale\Norskale Agent Host\AgentCacheUtility.exe" (
         cd "C:\Program Files (x86)\Norskale\Norskale Agent Host\"
-        el "C:\Program Files (x86)\Norskale\Norskale Agent Host\Local Databases\*.*" /s /f /q
+        del "C:\Program Files (x86)\Norskale\Norskale Agent Host\Local Databases\*.*" /s /f /q
         net start "Citrix WEM Agent Host Service" 
         net start "Netlogon"
         TIMEOUT /T 10
