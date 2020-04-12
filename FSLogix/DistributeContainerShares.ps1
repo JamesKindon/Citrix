@@ -67,7 +67,7 @@ Param(
     [string]$LogPath = "C:\FSLogixPathPlacementLogs\FSLogixPathLog.log", 
 
     [Parameter(Mandatory = $false)]
-    [int]$DiskSpaceBuffer = 100, # minimum free space which to consider OK for share utilisation
+    [int]$DiskSpaceBuffer = 100, # minimum free space in Gb which to consider OK for share utilisation
 
     [Parameter(Mandatory = $false)]
     [int]$LogRollover = 5 # number of days before logfile rollover occurs
