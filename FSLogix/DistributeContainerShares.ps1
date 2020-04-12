@@ -22,12 +22,12 @@
     Example above will process Office Container but not Profile Container settings, set a disk space buffer of 100GB, test two shares and rollover the log of its older than 10 days. 
 .EXAMPLE
     .\DistributeContainerShares.ps1 -DiskSpaceBuffer 150 -ContainerShares \\Kindo-DC\VHDs,\\Kindo-DDC\VHDs2 -LogRollover 5 -DriveLetter X
-    Example above will process both Office and Profile Container settings, set a disk space buffer of 150Gb, use the driver letter X and roll over log files older than 5 days
+    Example above will process both Office and Profile Container settings, set a disk space buffer of 150Gb, use the drive letter X and roll over log files older than 5 days
 .NOTES
     12.04.2020 - James Kindon - Additions
         - Moved drive mappings to native powershell code - removed wscript components
         - Simplified math logic
-        - Moved driver letter to variable: $DriveLetter
+        - Moved drive letter assignment to variable: $DriveLetter
         - Added a Disk Buffer to ensure sufficient space on a share before adding to array: $DiskSpaceBuffer
         - Removed duplicate and redunant array objects
         - Renamed variables for easier understanding
@@ -213,6 +213,7 @@ Write-Log -Message "Profile Container set to: $ProfileContainer" -Level Info
 Write-Log -Message "Office Container set to: $OfficeContainer" -Level Info
 Write-Log -Message "Logpath set to: $LogPath" -Level Info
 Write-Log -Message "Disk space buffer set to: $DiskSpaceBuffer" -Level Info
+Write-Log -Message "Log file rollover set to: $LogRollover" -Level Info
 
 Write-Log -Message "---Processing---"
 # Map a drive to each share, get the space available, add to custom object and remove drive
