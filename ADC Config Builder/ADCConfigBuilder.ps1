@@ -191,6 +191,7 @@ if ($GeneralConfig.IsPresent) {
     Write-Output "set ns ip $NSIP -mgmtAccess ENABLED -gui SECUREONLY" | Out-File -Append $ConfigFile
     Write-Output "add ntp server $NTPServer -minpoll 6 -maxpoll 10" | Out-File -Append $ConfigFile
     Write-Output "enable ntp sync" | Out-File -Append $ConfigFile
+    Write-Output "set ica parameter EnableSRonHAFailover YES" | Out-File -Append $ConfigFile
 
     # SSL Global Parameters
     Write-Verbose "Setting ADC SSL Paramaters" -Verbose
