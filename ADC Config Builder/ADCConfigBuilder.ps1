@@ -382,7 +382,7 @@ if ($LBStoreFront.IsPresent) {
     Write-Output "bind sslvserver $lbvs_SF_VIP_Name -certkeyName $SF_Cert" | Out-File -Append $ConfigFile
     Write-Output "set ssl vserver $lbvs_SF_VIP_Name -ssl3 DISABLED -tls12 ENABLED -HSTS ENABLED -maxage 1576800000" | Out-File -Append $ConfigFile
     Write-Output "unbind ssl vserver $lbvs_SF_VIP_Name -cipherName DEFAULT" | Out-File -Append $ConfigFile
-    Write-Output "bind ssl vserver $lbvs_SF_VIP_Name -cipherName add ssl cipher ssllabs-smw-q2-2018" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_SF_VIP_Name -cipherName ssllabs-smw-q2-2018" | Out-File -Append $ConfigFile
     Write-Output "bind ssl vserver $lbvs_SF_VIP_Name -eccCurveName P_256" | Out-File -Append $ConfigFile
     Write-Output "bind ssl vserver $lbvs_SF_VIP_Name -eccCurveName P_384" | Out-File -Append $ConfigFile
     Write-Output "bind ssl vserver $lbvs_SF_VIP_Name -eccCurveName P_224" | Out-File -Append $ConfigFile
@@ -452,7 +452,7 @@ if ($LBDirector.IsPresent) {
 
     Write-Output "set ssl vserver $lbvs_Dir_VIP_Name -ssl3 DISABLED -tls12 ENABLED -HSTS ENABLED -maxage 157680000" | Out-File -Append $ConfigFile
     Write-Output "unbind ssl vserver $lbvs_Dir_VIP_Name -cipherName DEFAULT" | Out-File -Append $ConfigFile
-    Write-Output "bind ssl vserver $lbvs_Dir_VIP_Name -cipherName add ssl cipher ssllabs-smw-q2-2018" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_Dir_VIP_Name -cipherName ssllabs-smw-q2-2018" | Out-File -Append $ConfigFile
     Write-Output "bind ssl vserver $lbvs_Dir_VIP_Name -eccCurveName P_256" | Out-File -Append $ConfigFile
     Write-Output "bind ssl vserver $lbvs_Dir_VIP_Name -eccCurveName P_384" | Out-File -Append $ConfigFile
     Write-Output "bind ssl vserver $lbvs_Dir_VIP_Name -eccCurveName P_224" | Out-File -Append $ConfigFile
@@ -485,7 +485,7 @@ if ($LBADDS.IsPresent) {
     Write-Output "add server $AD_Server2_Name $AD_Server2_IP -comment ""Domain Controller""" | Out-File -Append $ConfigFile
 
     #Monitors
-    Write-Output "add lb monitor $mon_LDAP LDAP -scriptName nsldap.pl -dispatcherIP 127.0.0.1 -dispatcherPort 3013 -password $LDAPBindPW -encrypted -encryptmethod ENCMTHD_3 -LRTM DISABLED -secure YES -baseDN $LDAPBase -bindDN $LDAPBindDN -filter cn=builtin" | Out-File -Append $ConfigFile
+    Write-Output "add lb monitor $mon_LDAP LDAP -scriptName nsldap.pl -dispatcherIP 127.0.0.1 -dispatcherPort 3013 -password $LDAPBindPW -LRTM DISABLED -secure YES -baseDN $LDAPBase -bindDN $LDAPBindDN -filter cn=builtin" | Out-File -Append $ConfigFile
     Write-Output "add lb monitor $mon_DNS_53 DNS -query $DNS_Query -queryType Address -LRTM DISABLED -IPAddress $DNS_Query_IP"
 
     #Service Group
@@ -499,7 +499,7 @@ if ($LBADDS.IsPresent) {
 
     Write-Output "bind serviceGroup $svcg_DNS_53 -monitorName $mon_DNS_53" | Out-File -Append $ConfigFile
     Write-Output "bind serviceGroup $svcg_LDAP_389 -monitorName $mon_LDAP" | Out-File -Append $ConfigFile
-    Write-Output "bind serviceGroup $svcg_LDAP_636 -monitorName $mon_LDAP" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_LDAPS_636 -monitorName $mon_LDAP" | Out-File -Append $ConfigFile
 
     #Load Balancers
     Write-Verbose "Setting ADDS Load Balancer VIP IP: $lbvs_DS_VIP_IP" -Verbose

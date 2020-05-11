@@ -35,6 +35,7 @@ Lbvs_SF_VIP_IP,,Load Balancer - StoreFront IP
 SF_RedirectURL,https://apps.Kindo.com,Redirect - StoreFront
 SF_RedirUrl,"""\""https://apps.domain.com/Citrix/StoreWeb\""""",Redirect - StoreFront
 SF_ResPol_Pattern,"""HTTP.REQ.HOSTNAME.EQ(\""storefront\"") && http.REQ.URL.EQ(\""/\"")""",Responder Policy Pattern - StoreFront
+SF_Cert,,Certificate - StoreFront
 #------Director Custom------,#------Director Custom------,#------Director Custom------
 Dir_Server1_Name,,Server - Director
 Dir_Server1_IP,,Server - Director IP
@@ -89,7 +90,7 @@ Dir_ResPol,respolicy_Director,Responder Policy - Director
 Dir_Respol_Pattern,"""HTTP.REQ.HOSTNAME.EQ(\""director\"") && http.REQ.URL.EQ(\""/\"")""",Responder Policy - Director
 #------ADDS Defaults------,#------ADDS Defaults------,#------ADDS Defaults------
 mon_DNS_53,mon_DNS_53,Monitor DNS
-mon_LDAP,mon_LDAP_mon,Monitor LDAP
+mon_LDAP,mon_LDAP,Monitor LDAP
 svcg_DNS_53,svcg_DNS_53,Service Group - DNS Port 53
 svcg_LDAP_389,svcg_LDAP_389,Service Group - LDAP Port 389
 svcg_LDAPS_636,svcg_LDAPS_636,Service Group - LDAPS Port 636
