@@ -166,12 +166,12 @@ function RollOverlog {
 
 function GetContainerSize {
     
-    Write-Log -Message "---Processing---"
+    Write-Log -Message "---Processing---" -Level Info
     Write-Log -Message "Getting $Type Containers Sizes in folder $ContainerPath"
     try {
         $Files = Get-ChildItem -Path $ContainerPath -Filter $Filter -Recurse -File -ErrorAction Stop
         $ContainerCount = ($Files | Measure-Object).Count
-        Write-Log "Processing $($ContainerCount) Containers"    
+        Write-Log "Processing $($ContainerCount) Containers" -Level Info    
     }
     catch {
         Write-Log -Message "Failed to get file list. Please check path and permissions" -Level Warn
@@ -191,10 +191,10 @@ function GetContainerSize {
     
     if ($Exportcsv.IsPresent) {
         if (!(Test-Path $CSVPath)) {
-            Write-Log -Message "Creating $CSVPath"
+            Write-Log -Message "Creating $CSVPath" -Level Info
             try {
                 New-Item -Path $CSVPath -Type File -force -ErrorAction Stop | Out-Null
-                Write-Log -Message "Created $CSVPath"
+                Write-Log -Message "Created $CSVPath" -Level Info
             }
             catch {
                 Write-Log -Message "Failed to create $CSVPath. Exiting" -Level Warn
@@ -202,10 +202,10 @@ function GetContainerSize {
             }
         }
         $FilesAndSizes | Export-CSV -NoTypeInformation -Path $CSVPath #Add Date here for tracking
-        Write-Log -Message "CSV Output is $CSVPath "
+        Write-Log -Message "CSV Output is $CSVPath" -Level Info
     }
 
-    Write-Log "Sorting results by $SortBy"
+    Write-Log "Sorting results by $SortBy" -Level Info
     if ($SortBy -eq "GB") {
         $FilesAndSizes | Select-Object Name, SizeKB, SizeMB, SizeGb | Sort-Object SizeGb
     }
