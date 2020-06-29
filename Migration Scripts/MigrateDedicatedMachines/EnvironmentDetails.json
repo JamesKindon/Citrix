@@ -1,0 +1,6 @@
+{
+    "HostingConnectionName": "--Destination Hosting Connection Name--",
+    "CatalogName": "--Destination Catalog Name--",
+    "PublishedName": "--Published Desktop Name if required--",
+    "DeliveryGroupName": "--Destination Delivery Group Name--"
+}
