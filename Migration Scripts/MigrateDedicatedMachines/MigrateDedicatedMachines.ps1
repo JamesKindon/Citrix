@@ -20,12 +20,23 @@
     Specifies the CLIXML file for import
 .EXAMPLE
     .\MigrateDedicatedMachines.ps1
+    Will prompt for VM input, and all environment destination details (via Get commands and GridView) if variables not set
+.EXAMPLE
+    .\MigrateDedicatedMachines.ps1 -InputPath c:\migration\vms.xml
+    Will take vm input from specified xml, and then prompt for all environment destination details (via Get commands and GridView) if variables not set
+.EXAMPLE
+    .\MigrateDedicatedMachines.ps1 -JSON -JSONInputPath c:\migration\EnvironmentDetails.json -InputPath c:\migration\vms.xml
+    Will take both JSON input for environment details, and VM input based on specified XML file
 .NOTES
     Export required information from existing catalog. Example:
 
     $CatalogName = 'CATALOGNAMEHERE'
     $ExportLocation = 'PATH HERE\vms.xml'
     Get-BrokerMachine -CatalogName $CatalogName -MaxRecordCount 100000 | Export-Clixml $ExportLocation
+
+    TODO
+        - Add Export Function
+        - Add JSON creation Function
 #>
 
 #region Params
