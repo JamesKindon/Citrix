@@ -379,7 +379,7 @@ Write-Log -Message "Working with Target Zone: $($ZoneTarget)" -Level Info
 
 # Get Catalog Details
 $Catalog = try {
-    Write-Log -Message "Attempting to get Catalog details for $($CatalogName)"
+    Write-Log -Message "Attempting to get Catalog details for $($CatalogName)" -Level Info
     Get-BrokerCatalog -Name $CatalogName -ErrorAction Stop
 }
 catch {
@@ -460,7 +460,7 @@ SwitchCatalogZone
 
 # Check error count
 if ($ErrorCount -ne "0") {
-    Write-Log -Message "There are $ErrorCount errors recorded. Please review logfile $LogPath"
+    Write-Log -Message "There are $ErrorCount errors recorded. Please review logfile $LogPath" -Level Info
 }
 
 Write-Log -Message "#####------------------------------------------------------------------------#####" -Level Warn
