@@ -1,0 +1,8 @@
+{
+    "CatalogName": "Kindon-Azure-SouthEastAsia-Dedicated",
+    "HostingConnectionSource": "Kindon_Azure_EastAsia",
+    "HostingConnectionTarget": "Kindon_Azure_SouthEastAsia",
+    "ResourceGroupTarget": "RG-SEA-CitrixCloud",
+    "ZoneSource": "Kindon_Azure_EA",
+    "ZoneTarget": "Kindon_Azure_SEA"
+}
