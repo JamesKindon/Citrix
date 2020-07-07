@@ -361,6 +361,16 @@ try {
     Write-Log -Message "Confirming Authentication with Citrix Cloud" -Level Info
     $null = Get-BrokerSite -ErrorAction Stop # This should trigger an auth call if session has timed out (else Get-XDAuthentication)
 }
+catch [Citrix.Broker.Admin.SDK.SdkOperationException]{
+    try {
+        Get-XDAuthentication
+    }
+    catch {
+        Write-Log -Message $_ -Level Warn
+        StopIteration
+        Exit 1    
+    }
+}
 catch {
     Write-Log -Message $_ -Level Warn
     StopIteration
