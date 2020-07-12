@@ -55,10 +55,7 @@ Param(
 
     [Parameter(Mandatory = $true, ParameterSetName = 'NoJSON')]
     [Parameter(ParameterSetName = 'ManualPublishedName')]
-    [String]$PublishedName,
-
-    [Parameter(Mandatory = $False)]
-    [Switch]$CitrixCloud
+    [String]$PublishedName
 )
 #endregion
 
@@ -414,7 +411,9 @@ function GetUpdatedCatalogAccountIdentityPool  {
 # ============================================================================
 StartIteration
 
-#HandleJSONInput
+# ============================================================================
+# Handle JSON input
+# ============================================================================
 if ($JSON.IsPresent) {
     Write-Log -Message "JSON input selected. Importing JSON data from: $JSONInputPath" -Level Info
     try {
@@ -438,12 +437,13 @@ if ($JSON.IsPresent) {
     $PublishedName = $EnvironmentDetails.PublishedName
 }
 
+# ============================================================================
+# Connect to Environment
+# ============================================================================
+
 LoadCitrixSnapins
 
-if ($CitrixCloud.IsPresent) {
-    Write-Log -Message "Working on Citrix Cloud Platform" -Level Info
-    TryForAuthentication
-}
+TryForAuthentication
 
 # ============================================================================
 # Get Environment Details
@@ -502,6 +502,9 @@ catch {
     Exit 1
 }  
 
+# ============================================================================
+# Execute the migration
+# ============================================================================
 $Count = ($VMs | Measure-Object).Count
 $StartCount = 1
 
