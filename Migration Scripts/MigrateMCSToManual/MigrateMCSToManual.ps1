@@ -535,5 +535,6 @@ foreach ($VM in $VMs) {
 }
 
 StopIteration
+Exit 0
 #endregion
 
