@@ -369,12 +369,12 @@ function RemoveMCSProvisionedMachine {
 
 function GetCatalogAccountIdentityPool {
     $IdentityPool = try { #get details about the Identity Pool
-        Write-Log -Message "Source Catalog: $($SourceCatalog): Getting Identity Pool information" -Level Info
+        Write-Log -Message "Source Catalog: $($SourceCatalog) Getting Identity Pool information" -Level Info
         Get-AcctIdentityPool -IdentityPoolName $SourceCatalog -ErrorAction Stop
     }
     catch {
         Write-Log -Message $_ -Level Warn
-        Write-Log -Message "Source Catalog: $($SourceCatalog): Cannot get information about associated Identity Pool. Not proceeding" -Level Warn
+        Write-Log -Message "Source Catalog: $($SourceCatalog) Cannot get information about associated Identity Pool. Not proceeding" -Level Warn
         StopIteration
         Exit 1
     }
@@ -482,7 +482,7 @@ CheckCatalogisManual
 
 #GetTargetDeliveryGroup
 $DeliveryGroup = try {
-    Write-Log -Message "Target Delivery Group: Getting Detail for: $TargetDeliveryGroup" -Level Info
+    Write-Log -Message "Target Delivery Group: Getting Detail for $TargetDeliveryGroup" -Level Info
     Get-BrokerDesktopGroup -name $TargetDeliveryGroup -ErrorAction Stop
 }
 catch {
