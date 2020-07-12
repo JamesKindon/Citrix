@@ -15,7 +15,6 @@
 .PARAMETER OverridePublishedName  
 .PARAMETER SetPublishedNameToMachineName
 .PARAMETER PublishedName
-.PARAMETER CitrixCloud
 #>
 
 #region Params
