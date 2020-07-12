@@ -61,7 +61,7 @@ Param(
     [Parameter(Mandatory = $false, ParameterSetName = 'JSON')]
     [Switch]$JSON,
 
-    [Parameter(Mandatory = $false, ParameterSetName = 'JSON')]
+    [Parameter(Mandatory = $true, ParameterSetName = 'JSON')]
     [String]$JSONInputPath,
 
     [Parameter(Mandatory = $false, ParameterSetName = 'NoJSON')]

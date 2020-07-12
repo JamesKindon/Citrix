@@ -1,0 +1,6 @@
+{
+    "SourceCatalog": "Kindon-Azure-SouthEastAsia-Dedicated-MCS",
+    "TargetCatalog": "Kindon-Azure-SouthEastAsia-Dedicated",
+    "TargetDeliveryGroup": "Kindon-Azure-ASR-Failover",
+    "PublishedName": ""
+}
