@@ -355,7 +355,7 @@ function RemoveMCSProvisionedMachine {
     }
     # remove account from machine catalog
     try {
-        Write-Log -Message "$($VM.MachineName): Removing Account from Machine Catalog" -Level Info
+        Write-Log -Message "$($VM.MachineName): Removing Account from Machine Catalog $($VM.CatalogName)" -Level Info
         $null = Remove-AcctADAccount -IdentityPoolName $VM.CatalogName -ADAccountSid $ProvVM.ADAccountSid -RemovalOption None
     }
     catch {
@@ -364,7 +364,7 @@ function RemoveMCSProvisionedMachine {
     }   
     # remove BrokerMachine
     try {
-        Write-Log -Message "$($VM.MachineName): Removing VM from Machine Catalog" -Level Info
+        Write-Log -Message "$($VM.MachineName): Removing VM from Machine Catalog $($VM.CatalogName)" -Level Info
         remove-BrokerMachine -MachineName $VM.MachineName
     }
     catch {
