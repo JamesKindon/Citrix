@@ -227,15 +227,15 @@ function FailoverHostingConnection {
             catch {
                 Write-Log -Message $_ -Level Warn
                 Write-Log -Message "Failed to change hosted Machine ID for $($VM.MachineName)"
-                Break
                 $ErrorCount += 1
+                Break
             }
         }
         catch {
             Write-Log -Message $_ -Level Warn
             Write-Log -Message "Failed to change hosting connection for $($VM.MachineName)"
-            Break
             $ErrorCount += 1
+            Break
         }
     }
     elseif ($VM.HypervisorConnectionName -eq $HostingConnectionTargetDetail.Name) {
