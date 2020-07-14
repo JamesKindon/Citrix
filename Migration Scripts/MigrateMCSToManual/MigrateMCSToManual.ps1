@@ -52,7 +52,7 @@ Param(
     [Parameter(ParameterSetName = 'ManualPublishedName')]
     [Switch]$OverridePublishedName,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'NoJSON')]
+    [Parameter(Mandatory = $false, ParameterSetName = 'NoJSON')]
     [Parameter(ParameterSetName = 'ManualPublishedName')]
     [String]$PublishedName
 )
@@ -320,7 +320,7 @@ function RemoveMCSProvisionedMachine {
     }
     catch {
         Write-Log -Message $_ -Level Warn
-        Break
+        $ErrorCount += 1
     }
     # Remove from Desktop Group
     try {
@@ -331,33 +331,45 @@ function RemoveMCSProvisionedMachine {
     }
     catch {
         Write-Log -Message $_ -Level Warn
+        $ErrorCount += 1
         Break
     }
     # Unlock Account
+    $ProvVM = (get-provvm -VMName ($VM.MachineName | Split-Path -Leaf))
     try {
         Write-Log -Message "$($VM.MachineName): Unlocking ProvVM Account" -Level Info
-        #Unlock-ProvVM -VMID (get-provvm -VMName $VM.hostedmachinename).VMId -ProvisioningSchemeName $VM.CatalogName
-        Unlock-ProvVM -VMID (get-provvm -VMName ($VM.MachineName | Split-Path -Leaf)).VMId -ProvisioningSchemeName $VM.CatalogName #TESTING
+        Unlock-ProvVM -VMID $ProvVM.VMId -ProvisioningSchemeName $VM.CatalogName
     }
     catch {
         Write-Log -Message $_ -Level Warn
-        Break
+        $ErrorCount += 1
     }
+    # RemoveProvVM
+    try {
+        Write-Log -Message "$($VM.MachineName): Removing ProvVM but keeping VM" -Level Info
+        $null = remove-ProvVM -VMName $ProvVM.VMName -ProvisioningSchemeName $VM.CatalogName -ForgetVM
+    }
+    catch {
+        Write-Log -Message $_ -Level Warn
+        $ErrorCount += 1
+    }
+    # remove account from machine catalog
     try {
         Write-Log -Message "$($VM.MachineName): Removing Account from Machine Catalog" -Level Info
-        $null = Remove-AcctADAccount -IdentityPoolName $VM.CatalogName -ADAccountSid $VM.SID -RemovalOption None
+        $null = Remove-AcctADAccount -IdentityPoolName $VM.CatalogName -ADAccountSid $ProvVM.ADAccountSid -RemovalOption None
     }
     catch {
         Write-Log -Message $_ -Level Warn
-        Break
+        $ErrorCount += 1
     }   
-    #remove account from machine catalog
+    # remove BrokerMachine
     try {
         Write-Log -Message "$($VM.MachineName): Removing VM from Machine Catalog" -Level Info
         remove-BrokerMachine -MachineName $VM.MachineName
     }
     catch {
         Write-Log -Message $_ -Level Warn
+        $ErrorCount += 1
         Break
     }
     GetUpdatedCatalogAccountIdentityPool    
@@ -506,6 +518,7 @@ catch {
 # ============================================================================
 $Count = ($VMs | Measure-Object).Count
 $StartCount = 1
+$ErrorCount = 0
 
 Write-Log -Message "There are $Count machines to process" -Level Info
 
@@ -534,6 +547,11 @@ foreach ($VM in $VMs) {
         Write-Log -Message "$($VM.MachineName) is not a MCS provisioned machine. Not proceeding" -Level Warn
         Break
     }
+}
+
+# Check error count
+if ($ErrorCount -ne "0") {
+    Write-Log -Message "There are $ErrorCount errors recorded. Please review logfile $LogPath" -Level Info
 }
 
 StopIteration
