@@ -1,6 +1,8 @@
 <#
 .SYNOPSIS
+    Migrates Dedicated MCS provisioned machines to a manual provisioned catalog and delivery gruop
 .DESCRIPTION
+    Loops through source catalog, removes the VM from existing delivery group, moves to a new catalog, handles provisioning relics, adds to new delivery group with user assignments retained
 .PARAMETER LogPath
     Logpath output for all operations
 .PARAMETER LogRollover
@@ -9,12 +11,29 @@
     Will consume a JSON import for configuration
 .PARAMETER JSONInputPath
     Specifies the JSON input file
-.PARAMETER SourceCatalog  
-.PARAMETER TargetCatalog  
-.PARAMETER TargetDeliveryGroup  
-.PARAMETER OverridePublishedName  
+.PARAMETER SourceCatalog
+    Specifies the source catalog for MCS machines
+.PARAMETER TargetCatalog
+    Specifies the target catalog for machines migrated from MCS
+.PARAMETER TargetDeliveryGroup
+    Specifies the target Delivery Group for migrated machines
+.PARAMETER OverridePublishedName
+    Switch to allow overriding the published desktop name with a new value (-PublishedName) else will consume existing published name
 .PARAMETER SetPublishedNameToMachineName
+    Switch to force set the published name to the VM name
 .PARAMETER PublishedName
+    Value for the new published name
+.EXAMPLE
+    .\MigrateMCSToManual -SourceCatalog "Kindon-Azure-SouthEastAsia-Dedicated-MCS" -TargetCatalog "Kindon-Azure-SouthEastAsia-Dedicated" -TargetDeliveryGroup ""Kindon-Azure-ASR-Failover" -SetPublishedNameToMachineName
+    Migrates vm's from source catalog, moves to target catalog and target delivery group and sets the published name to the VM name
+.EXAMPLE
+    .\MigrateMCSToManual -JSON -JSONInputPath 'C:\Temp\ASE-MCS.json'
+    Migrates vm's based on JSON input
+.EXAMPLE
+    .\MigrateMCSToManual -SourceCatalog "Kindon-Azure-SouthEastAsia-Dedicated-MCS" -TargetCatalog "Kindon-Azure-SouthEastAsia-Dedicated" -TargetDeliveryGroup ""Kindon-Azure-ASR-Failover" -OverridePublishedName -PublishedName "MyVM"
+    Migrates vm's from source catalog, moves to target catalog and target delivery group and sets the published name to MyVM
+.NOTES
+    Script has been designed for Citrix Cloud, but should work fine for On-Prem deployments if run on a delivery controller
 #>
 
 #region Params
