@@ -194,7 +194,7 @@ function SetShellFolderDefaults {
             Write-Log -Message "User Shell Folder values for $Target do not match" -level Warn
             Write-Log -Message "Attempting to set User Shell Folder value for $Target to default value: $DefaultValue" -Level Info
             try {
-                Set-ItemProperty -Path $UserShellKey -Name $Target -Value $DefaultValue -ErrorAction Stop -WhatIf #Fix This!
+                Set-ItemProperty -Path $UserShellKey -Name $Target -Value $DefaultValue -ErrorAction Stop
                 Write-Log -Message "Successfully wrote new value: $DefaultValue for key: $UserShellKey" -Level Info
             }
             catch {
@@ -211,7 +211,7 @@ function SetShellFolderDefaults {
             Write-Log -Message "Legacy Shell Folder values for $Target do not match" -Level Warn
             Write-Log -Message "Attempting to set Legacy Shell Folder for $Target to default value: $DefaultValue" -Level Info
             try {
-                Set-ItemProperty -Path $ShellKey -Name $Target -Value $DefaultValue -ErrorAction Stop -WhatIf #Fix This!
+                Set-ItemProperty -Path $ShellKey -Name $Target -Value $DefaultValue -ErrorAction Stop
                 Write-Log -Message "Successfully wrote new value: $DefaultValue for key: $ShellKey" -Level Info
             }
             catch {
@@ -231,38 +231,38 @@ $UserShellKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\User S
 $ShellKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders' #This is legacy and for backwards compatibility only
 
 [hashtable]$DefaultPaths = @{
-    "{00BCFC5A-ED94-4E48-96A1-3F6217F21990}" = "%UserProfile%\AppData\Local\Microsoft\Windows\RoamingTiles"
-    "{0DDD015D-B06C-45D5-8C4C-F59713854639}" = "%UserProfile%\Pictures"
-    "{1B3EA5DC-B587-4786-B4EF-BD1DC332AEAE}" = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Libraries"
-    "{374DE290-123F-4565-9164-39C4925E467B}" = "%UserProfile%\Downloads"
-    "{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}" = "%UserProfile%\Saved Games"
-    "{56784854-C6CB-462B-8169-88E350ACB882}" = "%UserProfile%\Contacts"
-    "{7D1D3A04-DEBB-4115-95CF-2F29DA2920DA}" = "%UserProfile%\Searches"
-    "{A520A1A4-1780-4FF6-BD18-167343C5AF16}" = "%UserProfile%\AppData\LocalLow"
-    "{BFB9D5E0-C6A9-404C-B2B2-AE6DB6AF4968}" = "%UserProfile%\Links"
-    "{F42EE2D3-909F-4907-8871-4C22FC0BF756}" = "%UserProfile%\Documents"
-    "Administrative Tools"                   = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Administrative Tools"
-    "AppData"                                = "%UserProfile%\AppData\Roaming"
-    "Cache"                                  = "%UserProfile%\AppData\Local\Microsoft\Windows\INetCache"
-    "CD Burning"                             = "%UserProfile%\AppData\Local\Microsoft\Windows\Burn\Burn"
-    "Cookies"                                = "%UserProfile%\AppData\Local\Microsoft\Windows\INetCookies"
-    "Desktop"                                = "%UserProfile%\Desktop"
-    "Favorites"                              = "%UserProfile%\Favorites"
+    "{00BCFC5A-ED94-4E48-96A1-3F6217F21990}" = "C:\Users\$env:UserName\AppData\Local\Microsoft\Windows\RoamingTiles"
+    "{0DDD015D-B06C-45D5-8C4C-F59713854639}" = "C:\Users\$env:UserName\Pictures"
+    "{1B3EA5DC-B587-4786-B4EF-BD1DC332AEAE}" = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Libraries"
+    "{374DE290-123F-4565-9164-39C4925E467B}" = "C:\Users\$env:UserName\Downloads"
+    "{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}" = "C:\Users\$env:UserName\Saved Games"
+    "{56784854-C6CB-462B-8169-88E350ACB882}" = "C:\Users\$env:UserName\Contacts"
+    "{7D1D3A04-DEBB-4115-95CF-2F29DA2920DA}" = "C:\Users\$env:UserName\Searches"
+    "{A520A1A4-1780-4FF6-BD18-167343C5AF16}" = "C:\Users\$env:UserName\AppData\LocalLow"
+    "{BFB9D5E0-C6A9-404C-B2B2-AE6DB6AF4968}" = "C:\Users\$env:UserName\Links"
+    "{F42EE2D3-909F-4907-8871-4C22FC0BF756}" = "C:\Users\$env:UserName\Documents"
+    "Administrative Tools"                   = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Administrative Tools"
+    "AppData"                                = "C:\Users\$env:UserName\AppData\Roaming"
+    "Cache"                                  = "C:\Users\$env:UserName\AppData\Local\Microsoft\Windows\INetCache"
+    "CD Burning"                             = "C:\Users\$env:UserName\AppData\Local\Microsoft\Windows\Burn\Burn"
+    "Cookies"                                = "C:\Users\$env:UserName\AppData\Local\Microsoft\Windows\INetCookies"
+    "Desktop"                                = "C:\Users\$env:UserName\Desktop"
+    "Favorites"                              = "C:\Users\$env:UserName\Favorites"
     "Fonts"                                  = "C:\Windows\Fonts"
-    "History"                                = "%UserProfile%\AppData\Local\Microsoft\Windows\History"
-    "Local AppData"                          = "%UserProfile%\AppData\Local"
-    "My Music"                               = "%UserProfile%\Music"
-    "My Pictures"                            = "%UserProfile%\Pictures"
-    "My Video"                               = "%UserProfile%\Videos"
-    "NetHood"                                = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Network Shortcuts"
-    "Personal"                               = "%UserProfile%\Documents"
-    "PrintHood"                              = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Printer Shortcuts"
-    "Programs"                               = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
-    "Recent"                                 = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Recent"
-    "SendTo"                                 = "%UserProfile%\AppData\Roaming\Microsoft\Windows\SendTo"
-    "Start Menu"                             = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Start Menu"
-    "Startup"                                = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-    "Templates"                              = "%UserProfile%\AppData\Roaming\Microsoft\Windows\Templates"
+    "History"                                = "C:\Users\$env:UserName\AppData\Local\Microsoft\Windows\History"
+    "Local AppData"                          = "C:\Users\$env:UserName\AppData\Local"
+    "My Music"                               = "C:\Users\$env:UserName\Music"
+    "My Pictures"                            = "C:\Users\$env:UserName\Pictures"
+    "My Video"                               = "C:\Users\$env:UserName\Videos"
+    "NetHood"                                = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Network Shortcuts"
+    "Personal"                               = "C:\Users\$env:UserName\Documents"
+    "PrintHood"                              = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Printer Shortcuts"
+    "Programs"                               = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
+    "Recent"                                 = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Recent"
+    "SendTo"                                 = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\SendTo"
+    "Start Menu"                             = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Start Menu"
+    "Startup"                                = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+    "Templates"                              = "C:\Users\$env:UserName\AppData\Roaming\Microsoft\Windows\Templates"
 }
 #endregion
 
