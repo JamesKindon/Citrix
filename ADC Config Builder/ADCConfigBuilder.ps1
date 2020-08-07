@@ -250,6 +250,9 @@ if ($GeneralConfig.IsPresent) {
     Write-Output "add responder action http_to_ssl_redirect_responderact redirect ""\""https://\"" + HTTP.REQ.HOSTNAME.HTTP_URL_SAFE + HTTP.REQ.URL.PATH_AND_QUERY.HTTP_URL_SAFE"" -responseStatusCode 302" | Out-File -Append $ConfigFile
     Write-Output "add responder policy http_to_ssl_redirect_responderpol HTTP.REQ.IS_VALID http_to_ssl_redirect_responderact" | Out-File -Append $ConfigFile
 
+    #Gateway LogOff action - Responder
+    Write-Output "add responder action respact_GatewayLogOffRedirect redirect ""\""https://\"" + HTTP.REQ.HOSTNAME.HTTP_URL_SAFE"" -comment ""Gateway LogOff redirect action"" -responseStatusCode 302" | Out-File -Append $ConfigFile
+    Write-Output "add responder policy respol_GatewayLogOffRedirect ""HTTP.REQ.URL.CONTAINS(\""/cgi/logout\"")"" respact_GatewayLogOffRedirect -comment ""Gateway LogOff Redirect Policy""" | Out-File -Append $ConfigFile
 }
 #endregion
 
