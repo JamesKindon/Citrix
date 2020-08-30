@@ -9,8 +9,10 @@ Customise the ProcsAndWaits Hash table with your executables and timesouts
 
 .EXAMPLE
 
-
 .NOTES
+    30.08.2019 - James Kindon Initial Release
+    20.08.2020 - James Kindon - Added Teams function to kill additional processes that teams launches
+
 .LINK
 #>
 
@@ -38,6 +40,25 @@ function StartProcess {
     Stop-Process -Id $proc.Id
 }
 
+function KillTeams {
+    $TeamsProcs = Get-Process -ProcessName "Teams"
+    if ($null -ne $TeamsProcs) {
+        Write-Verbose "There are $($TeamsProcs.Count) Teams processes running. Attempting to terminate" -Verbose
+        foreach ($Proc in $TeamsProcs) {
+            Write-Verbose "Stopping Teams Process with PID: $($Proc.Id)" -Verbose
+            try {
+                Stop-Process -Id $Proc.Id -Force -ErrorAction Stop
+            }
+            catch {
+                Write-Warning "$_"
+            }
+        }    
+    }
+    else {
+        Write-Verbose "There are no Teams processes running" -Verbose
+    }
+}
+
 Clear-Host
 Write-Verbose "Setting Arguments" -Verbose
 $StartDTM = (Get-Date)
@@ -56,6 +77,8 @@ $ProcsAndWaits.GetEnumerator() | ForEach-Object {
         Write-Warning "Process Path not Found for $($process.Key). Ignoring. Please Check Path"
     }
 }
+
+KillTeams
 
 Write-Verbose "Stop logging" -Verbose
 $EndDTM = (Get-Date)
