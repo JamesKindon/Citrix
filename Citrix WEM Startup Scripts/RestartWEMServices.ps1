@@ -10,14 +10,19 @@
       https://github.com/JamesKindon/Citrix/tree/master/Citrix%20WEM%20Startup%20Scripts/Legacy
     - Assumes a default installation location of WEM (will look for changed cache file locations)
 .PARAMETER LogPath
-    Logpath output for all operations
+    Logpath output for all operations. Defaults to c:\Logs\WEMCacheRefresh.log
 .PARAMETER LogRollover
     Number of days before logfiles are rolled over. Default is 5
 .PARAMETER DeleteWEMCache
     Specifies whether to delete the WEM Cache files. Typically only user for Cloud Deployments to address specific issues. Defaults to false
 .EXAMPLE
-    .\RestartWEMServices.ps1 -DeleteWEMCache True
-    Will backup cache files, delete existing cache files, and force a cache refresh. If no new cache files are received, the previously backed up cache files will be restored
+    .\RestartWEMServices.ps1 -DeleteWEMCache True -LogPath c:\Logs\WEMCacheRefresh.log 
+    Will stop services, backup cache files, delete existing cache files, and force a cache refresh. If no new cache files are received, the previously backed up cache files will be restored
+.EXAMPLE
+    .\RestartWEMServices.ps1 -LogPath c:\Logs\WEMCacheRefresh.log
+    Will force a service restart and cache refresh. Logs to c:\Logs\WEMCacheRefresh.log
+.NOTES
+    06.09.2020 - rewritten existing scripts in an attempt to deal with ongoing cache issues
 #>
 
 #region Params
@@ -26,7 +31,7 @@
 # ============================================================================
 Param(
     [Parameter(Mandatory = $false)]
-    [string]$LogPath = "C:\Logs\WEMAgentRefresh.log", 
+    [string]$LogPath = "C:\Logs\WEMCacheRefresh.log", 
 
     [Parameter(Mandatory = $false)]
     [int]$LogRollover = 5, # number of days before logfile rollover occurs
