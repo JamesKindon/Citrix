@@ -340,8 +340,6 @@ function RefreshWEMCache {
 
 $WEMService = "Citrix WEM Agent Host Service"
 $WEMProcess = "Citrix.Wem.Agent.Service"
-$WEMAgentCacheUtility = "C:\Program Files (x86)\Citrix\Workspace Environment Management Agent\AgentCacheUtility.exe"
-$CachePath = (Split-Path $WEMAgentCacheUtility -Parent) + "\Local Databases"
 
 #endregion
 
@@ -353,7 +351,11 @@ StartIteration
 
 if (Get-Service -Name $WEMService -ErrorAction SilentlyContinue) {
     Write-Log -Message "$WEMService Found" -Level Info
-    $AlternateCacheLocation = (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Norskale\Agent Host\').AgentCacheAlternateLocation
+    $WEMConfigDetails = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Norskale\Agent Host\'
+    $AlternateCacheLocation = $WEMConfigDetails.AgentCacheAlternateLocation
+    $WEMAgentCacheUtility = Join-Path -Path $WEMConfigDetails.AgentLocation -ChildPath "AgentCacheUtility.exe"
+    $CachePath = Join-Path -Path (Split-Path $WEMAgentCacheUtility -Parent) -ChildPath "Local Databases"
+
     if ($AlternateCacheLocation) {
         Write-Log -Message "WEM Cache is in a non standard location: $AlternateCacheLocation" -Level Info
         if (Test-Path $AlternateCacheLocation) {
