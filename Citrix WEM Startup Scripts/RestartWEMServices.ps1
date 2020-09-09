@@ -357,7 +357,7 @@ if (Get-Service -Name $WEMService -ErrorAction SilentlyContinue) {
     $CachePath = Join-Path -Path (Split-Path $WEMAgentCacheUtility -Parent) -ChildPath "Local Databases"
 
     if ($AlternateCacheLocation) {
-        Write-Log -Message "WEM Cache is in location: $AlternateCacheLocation" -Level Info
+        Write-Log -Message "WEM Cache is set to location: $AlternateCacheLocation" -Level Info
         if (Test-Path $AlternateCacheLocation) {
             $CachePath = $AlternateCacheLocation
         }
