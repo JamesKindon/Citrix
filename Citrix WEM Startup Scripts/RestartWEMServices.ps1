@@ -23,6 +23,7 @@
     Will force a service restart and cache refresh. Logs to c:\Logs\WEMCacheRefresh.log
 .NOTES
     06.09.2020 - rewritten existing scripts in an attempt to deal with ongoing cache issues
+    10.10.2020 - added additional error handling for cache files (making sure they all exist), added additional logging and fixed restore code
 #>
 
 #region Params
@@ -226,22 +227,33 @@ function RestartWEMServices {
         Write-Log -Message "Waiting 30 seconds to confirm cache files are created" -Level Info
         Start-Sleep -Seconds 30
         Write-Log -Message "Testing for WEM cache files" -Level Info
-        if ($null -eq (Get-ChildItem -Path $CachePath)) {
-            Write-Log -Message "Cannot find WEM cache files! Attempting Service Restart and refresh" -Level Warn
+        $CacheFiles = @(Get-ChildItem -Path $CachePath\* -include *.db)
+        if ($CacheFiles.Count -lt 2) {
+            Write-Log -Message "Cannot find all WEM cache files! Attempting Service restart and refresh" -Level Warn
             StopWEMServices -Computer $Env:COMPUTERNAME
             StartWEMServices -Computer $Env:COMPUTERNAME
             Write-Log -Message "Waiting 20 seconds before cache refresh" -Level Info
             Start-Sleep 20
             RefreshWEMCache -Computer $Env:COMPUTERNAME
             Write-Log -Message "Waiting 30 seconds to confirm cache files are created" -Level Info
-            Start-Sleep 30 
-            if ($null -eq (Get-ChildItem -path $CachePath)) {
-                Write-Log -Message "Cannot find Cache Files. Restoring from last backup" -level Warn
+            Start-Sleep 30
+            $CacheFiles = @(Get-ChildItem -Path $CachePath\* -include *.db)
+            if ($CacheFiles.Count -lt 2) {
+                Write-Log -Message "Cannot find cache files. Restoring from last backup" -level Warn
                 RestoreWEMCache -Computer $Env:COMPUTERNAME
             }
+            else {
+                Write-Log -Message "$($CacheFiles.Count) cache files found!" -Level Info
+                foreach ($File in $CacheFiles) {
+                    Write-Log -Message "Found $($File.Name) with last write time of $($File.LastWriteTime)" -Level Info
+                }
+            }    
         }
         else {
-            Write-Log -Message "Cache files found!" -Level Info
+            Write-Log -Message "$($CacheFiles.Count) cache files found!" -Level Info
+            foreach ($File in $CacheFiles) {
+                Write-Log -Message "Found $($File.Name) with last write time of $($File.LastWriteTime)" -Level Info
+            }
         }
     }
 }
@@ -282,6 +294,7 @@ function RestoreWEMCache {
     )
     Write-Log -Message "Attempting to restore WEM cache files from backup" -Level Info
     StopWEMServices -Computer $Env:COMPUTERNAME
+    $CacheBackupPath = (Split-Path $CachePath -Parent) + "\WEMCacheBackup"
     $BackupFiles = Get-ChildItem -Path $CacheBackupPath
     foreach ($File in $BackupFiles) {
         try {
@@ -307,7 +320,7 @@ function DeleteWEMCache {
     $CacheFiles = Get-ChildItem -Path $CachePath
     foreach ($File in $CacheFiles) {
         try {
-            Write-Log "Deleting file $($File.VersionInfo.FileName)"
+            Write-Log -Message "Deleting file $($File.VersionInfo.FileName)" -Level Info
             Remove-Item -Path $File.VersionInfo.FileName -Force -ErrorAction Stop
         }
         catch {
@@ -392,4 +405,3 @@ else {
 StopIteration
 Exit 0
 #endregion
-
