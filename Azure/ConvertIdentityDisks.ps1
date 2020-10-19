@@ -88,9 +88,9 @@ function Stop-Stopwatch {
 # Variables
 # ============================================================================
 $isAzureRunbook = "true" # Set to true if using an Azure Runbook, this will move the authentication model to the Automation Account
-$DiskNameFilter = "*-IdentityDisk-*" # Disk name filter to look for
+$DiskNameFilter = "*-IdentityDisk-*" # Disk name filter to match
 $DiskSearchSku = "Premium_LRS" # The Source Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
-$DiskTargetSku = "StandardSSD_LRS" # The Target Sku for Disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
+$DiskTargetSku = "StandardSSD_LRS" # The Target Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
 $SubscriptionList = @("SubID-1", "SubID-2") # Array of Subscription ID's to query. Subscription ID. Not name
 
 #endregion
