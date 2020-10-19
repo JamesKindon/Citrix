@@ -10,6 +10,29 @@
     19.10.2020 - James Kindon Initial Release
 #>
 
+#region Params
+# ============================================================================
+# Parameters
+# ============================================================================
+Param(
+    [Parameter(Mandatory = $false)]
+    [string]$isAzureRunbook = "true", #Set to true if using an Azure Runbook, this will move the authentication model to the Automation Account
+
+    [Parameter(Mandatory = $false)]
+    [string]$DiskNameFilter = "*-IdentityDisk-*", #Disk name filter to match
+    
+    [Parameter(Mandatory = $false)]
+    [string]$DiskSearchSku = "Premium_LRS", #The Source Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
+
+    [Parameter(Mandatory = $false)]
+    [string]$DiskTargetSku = "StandardSSD_LRS", #The Target Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
+
+    [Parameter(Mandatory = $false)]
+    [Array]$SubscriptionList = ("SubID-1","SubID-2") #Array of Subscription ID's to query. Subscription ID. Not name
+
+)
+#endregion
+
 #region Functions
 # ============================================================================
 # Functions
@@ -81,18 +104,6 @@ function Stop-Stopwatch {
         Write-Output "Script processing took $($StopWatch.Elapsed.TotalSeconds) seconds to complete."
     }
 }
-
-#endregion
-
-#region Variables
-# ============================================================================
-# Variables
-# ============================================================================
-$isAzureRunbook = "true" # Set to true if using an Azure Runbook, this will move the authentication model to the Automation Account
-$DiskNameFilter = "*-IdentityDisk-*" # Disk name filter to match
-$DiskSearchSku = "Premium_LRS" # The Source Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
-$DiskTargetSku = "StandardSSD_LRS" # The Target Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
-$SubscriptionList = @("SubID-1", "SubID-2") # Array of Subscription ID's to query. Subscription ID. Not name
 
 #endregion
 
