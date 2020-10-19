@@ -5,6 +5,7 @@
     The script is designed to run as an Azure Runbook, proactively looking for cost savings by converting identity disks (often at premium) to a cheaper Sku (Standard SSD for example)
 .NOTES
     Ensure that the automation account executing the runbook has appropriate access to the list of subscriptions (Contributor)
+    Requires Az.Accounts, Az.Compute Modules imported and available in automation account
     If $isAzureRunBook is set to false, it is assumed you are executing this code under the context of a user who is authenticated to Azure, and has sufficient access to the specified subscriptions
     19.10.2020 - James Kindon Initial Release
 #>
