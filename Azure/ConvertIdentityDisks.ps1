@@ -116,7 +116,7 @@ Start-Stopwatch
 
 Write-Output "Input: Searching for disks with naming pattern: $DiskNameFilter"
 Write-Output "Input: Searching for disks with Sku: $DiskSearchSku"
-Write-Output "Input: Setting target Sku for disks to: DiskTargetSku"
+Write-Output "Input: Setting target Sku for disks to: $DiskTargetSku"
 Write-Output "Input: Searching across $($SubscriptionList.Count) Subscriptions"
 
 $Global:TotalDiskCount = 0 #Total disk count across all Subscriptions matching name criteria
