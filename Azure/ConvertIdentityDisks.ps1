@@ -28,7 +28,7 @@ Param(
     [string]$DiskTargetSku = "StandardSSD_LRS", #The Target Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
 
     [Parameter(Mandatory = $false)]
-    [Array]$SubscriptionList = ("SubID-1","SubID-2") #Array of Subscription ID's to query. Subscription ID. Not name
+    [Array]$SubscriptionList = ("Sub-TBD1","Sub-TBD2") #Array of Subscription ID's to query. Subscription ID. Not name
 
 )
 #endregion
@@ -39,11 +39,12 @@ Param(
 # ============================================================================
 function ConvertIdentityDisks {
     $IdentityDisks = Get-AzDisk | Where-Object { $_.Name -like $DiskNameFilter }
-
     Write-Output "Subscription $Subscription ($($AzureContext.Name)): There are $($IdentityDisks.Count) Disks found matching name filter: $($DiskNameFilter)"
+    $Global:TotalDiskCount += $IdentityDisks.Count
 
     $TargetedDisks = $IdentityDisks | Where-Object { $_.Sku.Name -eq $DiskSearchSku }
     Write-Output "Subscription $Subscription ($($AzureContext.Name)): There are $($TargetedDisks.Count) Disks found matching Sku: $($DiskSearchSku)"
+    $Global:TotalConversionDiskCount += $TargetedDisks.Count
 
     $UnattachedDisks = $TargetedDisks | Where-Object { $_.DiskState -eq "unattached" }
     Write-Output "Subscription $Subscription ($($AzureContext.Name)): There are $($UnattachedDisks.Count) Disks unattached which can be converted"
@@ -118,6 +119,8 @@ Write-Output "Input: Searching for disks with Sku: $DiskSearchSku"
 Write-Output "Input: Setting target Sku for disks to: DiskTargetSku"
 Write-Output "Input: Searching across $($SubscriptionList.Count) Subscriptions"
 
+$Global:TotalDiskCount = 0 #Total disk count across all Subscriptions matching name criteria
+$Global:TotalConversionDiskCount = 0 #Total disk count matching the conversion critera
 $Global:TotalSuccessCount = 0 #Total success count across all Subscriptions
 $Global:TotalFailCount = 0 #Total fail count across all Subscriptions
 $Global:TotalUnattachedDiskCount = 0 #Total number of unattached disks 
@@ -176,8 +179,10 @@ foreach ($Subscription in $SubscriptionList) {
 }
 
 Write-Output "Total: Processed $($SubscriptionList.Count) Subscriptions"
+Write-Output "Total: There were a total of $TotalDiskCount disks across $($SubscriptionList.Count) Subscriptions which match the specified name criteria"
+Write-Output "Total: There were a total of $TotalConversionDiskCount disks across $($SubscriptionList.Count) Subscriptions which match the conversion criteria"
 Write-Output "Total: There were a total of $TotalUnattachedDiskCount disks across $($SubscriptionList.Count) Subscriptions which were capable of being converted"
-Write-Output "Total: There were a total of $TotalAttachedDiskCount disks across $($SubscriptionList.Count) Subscriptions which were capable but could not be converted"
+Write-Output "Total: There were a total of $TotalAttachedDiskCount disks across $($SubscriptionList.Count) Subscriptions which were capable but were in use"
 Write-Output "Total: Successfully converted $TotalSuccessCount disks across $($SubscriptionList.Count) Subscriptions"
 Write-Output "Total: Failed to convert $TotalFailCount disks across $($SubscriptionList.Count) Subscriptions"
 
