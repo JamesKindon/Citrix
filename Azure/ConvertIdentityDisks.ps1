@@ -5,9 +5,10 @@
     The script is designed to run as an Azure Runbook, proactively looking for cost savings by converting identity disks (often at premium) to a cheaper Sku (Standard SSD for example)
 .NOTES
     Ensure that the automation account executing the runbook has appropriate access to the list of subscriptions (Contributor)
-    Requires Az.Accounts, Az.Compute Modules imported and available in automation account
+    Requires Az.Accounts, Az.Resources, Az.Compute Modules imported and available in automation account
     If $isAzureRunBook is set to false, it is assumed you are executing this code under the context of a user who is authenticated to Azure, and has sufficient access to the specified subscriptions
-    19.10.2020 - James Kindon Initial Release
+    19.10.2020 - James Kindon - Initial Release
+    25.10.2020 - James Kindon - Added Resource Group targeting
 #>
 
 #region Params
@@ -28,7 +29,10 @@ Param(
     [string]$DiskTargetSku = "StandardSSD_LRS", #The Target Sku for disks. StandardSSD_LRS, Premium_LRS, Standard_LRS
 
     [Parameter(Mandatory = $false)]
-    [Array]$SubscriptionList = ("Sub-TBD1","Sub-TBD2") #Array of Subscription ID's to query. Subscription ID. Not name
+    [Array]$SubscriptionList = ("Sub-TBD1","Sub-TBD2"), #Array of Subscription ID's to query. Subscription ID. Not name
+
+    [Parameter(Mandatory = $false)]
+    [Array]$ResourceGroups = ("") #Array of Resource Groups to query, only used to limit scope as required
 
 )
 #endregion
@@ -38,7 +42,13 @@ Param(
 # Functions
 # ============================================================================
 function ConvertIdentityDisks {
-    $IdentityDisks = Get-AzDisk | Where-Object { $_.Name -like $DiskNameFilter }
+    if ($ResourceGroups -ne "") {
+        $IdentityDisks = Get-AzDisk -ResourceGroupName $RG.ResourceGroupName | Where-Object { $_.Name -like $DiskNameFilter }
+    }
+    else {
+        $IdentityDisks = Get-AzDisk | Where-Object { $_.Name -like $DiskNameFilter }
+    }
+    
     Write-Output "Subscription $Subscription ($($AzureContext.Name)): There are $($IdentityDisks.Count) Disks found matching name filter: $($DiskNameFilter)"
     $Global:TotalDiskCount += $IdentityDisks.Count
 
@@ -90,6 +100,26 @@ function ConvertIdentityDisks {
     }
 }
 
+function ProcessResourceGroups {
+    if ($ResourceGroups -ne "") {
+        foreach ($RG in $ResourceGroups) {
+            try {
+                Write-Output "Subscription $Subscription ($($AzureContext.Name)): Processing Resource Group: $RG"
+                $RG = Get-AzResourceGroup -Name $RG -ErrorAction Stop
+                #Process Disks
+                ConvertIdentityDisks
+            }
+            catch {
+                Write-Warning "$($_) Resource Group: $($RG) not found in subscription: $($AzureContext.Name). Searching additional Subscriptions if specified"
+            }
+        }
+    }
+    else {
+        #Process all disks
+        ConvertIdentityDisks
+    }
+}
+
 function Start-Stopwatch {
     Write-Output "Starting Timer"
     $Global:StopWatch = [System.Diagnostics.Stopwatch]::StartNew()
@@ -118,6 +148,12 @@ Write-Output "Input: Searching for disks with naming pattern: $DiskNameFilter"
 Write-Output "Input: Searching for disks with Sku: $DiskSearchSku"
 Write-Output "Input: Setting target Sku for disks to: $DiskTargetSku"
 Write-Output "Input: Searching across $($SubscriptionList.Count) Subscriptions"
+if ($Resourcegroups -ne "") {
+    Write-Output "Input: Searching across $($ResourceGroups.Count) Resource Groups"
+}
+else {
+    Write-Output "Input: Resource Group filtering not applied"
+}
 
 $Global:TotalDiskCount = 0 #Total disk count across all Subscriptions matching name criteria
 $Global:TotalConversionDiskCount = 0 #Total disk count matching the conversion critera
@@ -169,7 +205,7 @@ foreach ($Subscription in $SubscriptionList) {
         $AzureContext = Get-AzSubscription -SubscriptionId $Subscription
         $null = Set-AzContext $AzureContext
         Write-Output "Set Azure Context to $($AzureContext.SubscriptionId) ($($AzureContext.Name))"
-        ConvertIdentityDisks    
+        ProcessResourceGroups
     }
     catch {
         Write-Warning "Failed to set Azure Context"
@@ -179,6 +215,9 @@ foreach ($Subscription in $SubscriptionList) {
 }
 
 Write-Output "Total: Processed $($SubscriptionList.Count) Subscriptions"
+if ($ResourceGroups -ne "") {
+    Write-Output "Total: Processed $($ResourceGroups.Count) Resource Groups"
+}
 Write-Output "Total: There were a total of $TotalDiskCount disks across $($SubscriptionList.Count) Subscriptions which match the specified name criteria"
 Write-Output "Total: There were a total of $TotalConversionDiskCount disks across $($SubscriptionList.Count) Subscriptions which match the conversion criteria"
 Write-Output "Total: There were a total of $TotalUnattachedDiskCount disks across $($SubscriptionList.Count) Subscriptions which were capable of being converted"
