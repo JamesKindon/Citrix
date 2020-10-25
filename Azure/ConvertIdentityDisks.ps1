@@ -32,7 +32,7 @@ Param(
     [Array]$SubscriptionList = ("Sub-TBD1","Sub-TBD2"), #Array of Subscription ID's to query. Subscription ID. Not name
 
     [Parameter(Mandatory = $false)]
-    [Array]$ResourceGroups = ("") #Array of Resource Groups to query, only used to limit scope as required
+    [Array]$ResourceGroups = ("") #Array of Resource Groups to query, only used to limit scope as required. Leave empty ("") to target subscription
 
 )
 #endregion
