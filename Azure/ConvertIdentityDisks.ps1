@@ -56,7 +56,7 @@ function ConvertIdentityDisks {
     Write-Output "Subscription $Subscription ($($AzureContext.Name)): There are $($TargetedDisks.Count) Disks found matching Sku: $($DiskSearchSku)"
     $Global:TotalConversionDiskCount += $TargetedDisks.Count
 
-    $UnattachedDisks = $TargetedDisks | Where-Object { $_.DiskState -eq "unattached" }
+    $UnattachedDisks = $TargetedDisks | Where-Object { $_.DiskState -eq "unattached" -or $_.DiskState -eq "reserved" }
     Write-Output "Subscription $Subscription ($($AzureContext.Name)): There are $($UnattachedDisks.Count) Disks unattached which can be converted"
     $Global:TotalUnattachedDiskCount += $UnattachedDisks.Count
 
