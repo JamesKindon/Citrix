@@ -234,14 +234,14 @@ foreach ($Controller in $Controllers) {
             try {
                 if ($DeliveryGroups.Count -eq "0") {
                     Write-Log -Message "Controller $($Controller): No Delivery Group filtering specified. Searching all Delivery Groups" -Level Info
-                    $Sessions = Get-BrokerSession -AdminAddress $Controller -MaxRecordCount 100000 | Where-Object {$_.LaunchedViaHostName -like "*$StoreFront*"}
+                    $Sessions = Get-BrokerSession -AdminAddress $Controller -MaxRecordCount 100000 | Where-Object { $_.LaunchedViaHostName -like "*$StoreFront*" }
                 }
                 else {
                     Write-Log -Message "Controller $($Controller): Delivery Group filtering enabled" -Level info
                     foreach ($DG in $DeliveryGroups) {
                         Write-Log -Message "Controller $($Controller): Searching Delivery Group: $($DG)" -Level Info
                     }
-                    $Sessions = Get-BrokerSession -AdminAddress $Controller -MaxRecordCount 100000 | Where-Object {$_.LaunchedViaHostName -like "*$StoreFront*" -and $_.DesktopGroupName -in $DeliveryGroups}
+                    $Sessions = Get-BrokerSession -AdminAddress $Controller -MaxRecordCount 100000 | Where-Object { $_.LaunchedViaHostName -like "*$StoreFront*" -and $_.DesktopGroupName -in $DeliveryGroups }
                 }
                 $SessionCount = ($Sessions | Measure-Object).Count
                 Write-Log -Message "Controller $($Controller): Found $($SessionCount) sessions launched via StoreFront Server (Pattern Match): $($StoreFront)" -Level Info
@@ -257,7 +257,7 @@ foreach ($Controller in $Controllers) {
 
 # Filter Users
 if ($UserFilter.count -ne 0) {
-    $AllUsers = $AllUsers | Where-Object {$_.UserName -in $UserFilter}
+    $AllUsers = $AllUsers | Where-Object { $_.UserName -in $UserFilter }
 }
 
 # Create report for output
@@ -265,23 +265,23 @@ $Report = @()
 
 foreach ($User in $AllUsers) {
     try {
-    $UserDetails = New-Object PSObject
+        $UserDetails = New-Object PSObject
 
-    $ADUser = Get-ADUser -Filter "UserPrincipalName -eq '$($User.UserUPN)'" -Properties * -ErrorAction Stop
+        $ADUser = Get-ADUser -Filter "UserPrincipalName -eq '$($User.UserUPN)'" -Properties * -ErrorAction Stop
 
-    $UserDetails = New-Object PSObject -Property @{
-        FirstName = $ADUser.GivenName
-        LastName = $ADUser.Surname
-        Email = $ADUser.mail
-        Username = $User.UserName
-        MachineName = Split-Path $user.MachineName -leaf
-        LaunchedViaHostName = $user.LaunchedViaHostName
-        Controller = $User.ControllerDNSName
-        DesktopGroupName = $User.DesktopGroupName
-        SessionState = $User.SessionState
-    }
+        $UserDetails = New-Object PSObject -Property @{
+            FirstName           = $ADUser.GivenName
+            LastName            = $ADUser.Surname
+            Email               = $ADUser.mail
+            Username            = $User.UserName
+            MachineName         = Split-Path $user.MachineName -leaf
+            LaunchedViaHostName = $user.LaunchedViaHostName
+            Controller          = $User.ControllerDNSName
+            DesktopGroupName    = $User.DesktopGroupName
+            SessionState        = $User.SessionState
+        }
 
-    $report += $UserDetails
+        $report += $UserDetails
     }
     Catch {
         Write-Log -Message "$_" -Level Warn
@@ -293,10 +293,10 @@ Write-Log -Message "There are $($Count) connections matching the search criteria
 $Date = Get-Date -Format hh-mm_dd-MM-yyyy
 
 $Outfile = $ReportFolder + "\CVAD_Connections_$Date.csv"
-$report | Select-Object FirstName,LastName,UserName,Email,DesktopGroupName,MachineName,SessionState,LaunchedViaHostName | Export-Csv -NoTypeInformation $Outfile
+$report | Select-Object FirstName, LastName, UserName, Email, DesktopGroupName, MachineName, SessionState, LaunchedViaHostName | Export-Csv -NoTypeInformation $Outfile
 Write-Log -Message "Report is located at $Outfile" -Level Info
 if ($OutputToConsole.IsPresent) {
-    $report | Select-Object FirstName,LastName,UserName,Email,DesktopGroupName,MachineName,SessionState,LaunchedViaHostName | Format-Table
+    $report | Select-Object FirstName, LastName, UserName, Email, DesktopGroupName, MachineName, SessionState, LaunchedViaHostName | Format-Table
 }
 
 StopIteration
