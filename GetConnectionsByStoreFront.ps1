@@ -252,6 +252,7 @@ foreach ($User in $AllUsers) {
         LaunchedViaHostName = $user.LaunchedViaHostName
         Controller = $User.ControllerDNSName
         DesktopGroupName = $User.DesktopGroupName
+        SessionState = $User.SessionState
     }
 
     $report += $UserDetails
@@ -262,10 +263,10 @@ Write-Log -Message "There are $($Count) connections matching the search criteria
 $Date = Get-Date -Format hh-mm_dd-MM-yyyy
 
 $Outfile = $ReportFolder + "\CVAD_Connections_$Date.csv"
-$report | Select-Object FirstName,LastName,UserName,Email,DesktopGroupName,MachineName,LaunchedViaHostName | Export-Csv -NoTypeInformation $Outfile
+$report | Select-Object FirstName,LastName,UserName,Email,DesktopGroupName,MachineName,SessionState,LaunchedViaHostName | Export-Csv -NoTypeInformation $Outfile
 Write-Log -Message "Report is located at $Outfile" -Level Info
 if ($OutputToConsole.IsPresent) {
-    $report | Select-Object FirstName,LastName,UserName,Email,DesktopGroupName,MachineName,LaunchedViaHostName | Format-Table
+    $report | Select-Object FirstName,LastName,UserName,Email,DesktopGroupName,MachineName,SessionState,LaunchedViaHostName | Format-Table
 }
 
 StopIteration
