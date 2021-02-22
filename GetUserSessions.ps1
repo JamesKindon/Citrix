@@ -11,13 +11,18 @@
 .PARAMETER Controllers
     Specify Controllers to target
 .PARAMETER StoreFrontServers
-    Specify StoreFront Servers to query connections from (LaunchedViaHostName). Wilcards are accepted, Eg, *Kindo-SF*
+    Optionalfilter array to query specific StoreFront Servers (LaunchedViaHostName). Wilcards are accepted, Eg, *Kindo-SF*
 .PARAMETER DeliveryGroups
     Optional filter array to query specific Delivery Groups
+.PARAMETER UserFilter
+    Optional filter array to query specific usernames DOMAIN\User
 .PARAMETER ReportFolder
     Output folder for the CSV reports to land in. Defaults to C:\Temp
 .PARAMETER OutputToConsole
     Optionally outputs report to console in table format
+.Example
+    .\GetConnectionsByStoreFront.ps1 -Controllers "JKDC01","BigBobDC02" -ReportFolder "c:\temp"
+    Queries Controllers "JKDC01" and "BigBobDC02" for all sessions. Searches all Delivery Groups and outputs data to c:\temp\
 .Example
     .\GetConnectionsByStoreFront.ps1 -Controllers "JKDC01","BigBobDC02" -StoreFrontServers "*JK-SF*","*OLDSF*" -ReportFolder "c:\temp"
     Queries Controllers "JKDC01" and "BigBobDC02" for sessions launched via StoreFront Servers matching any name including "JK-SF" or "OLDSF". Searches all Delivery Groups and outputs data to c:\temp\
@@ -27,6 +32,9 @@
 .Example
     .\GetConnectionsByStoreFront.ps1 -Controllers "JKDC01","BigBobDC02" -StoreFrontServers "*JK-SF*","*OLDSF*" -ReportFolder "c:\temp" -DeliveryGroups "DG1","Silly DG3" -OutputToConsole
     Queries Controllers "JKDC01" and "BigBobDC02" for sessions launched via StoreFront Servers matching any name including "JK-SF" or "OLDSF". Searches Delivery Groups "DG1" and "Silly DG3", outputs data to c:\temp\ and outputs report to console
+.Example
+    .\GetConnectionsByStoreFront.ps1 -Controllers "JKDC01","BigBobDC02" -StoreFrontServers "*JK-SF*","*OLDSF*" -ReportFolder "c:\temp" -DeliveryGroups "DG1","Silly DG3" -UserFilter "DOMAIN\KindonJ" -OutputToConsole
+    Queries Controllers "JKDC01" and "BigBobDC02" for sessions launched via StoreFront Servers matching any name including "JK-SF" or "OLDSF". Searches Delivery Groups "DG1" and "Silly DG3", Filters to only the DOMAIN\KindonJ user, outputs data to c:\temp\ and outputs report to console
 
 #>
 
@@ -44,11 +52,14 @@ Param(
     [Parameter(Mandatory = $True)]
     [Array]$Controllers = @(),
 
-    [Parameter(Mandatory = $True)]
+    [Parameter(Mandatory = $False)]
     [Array]$StoreFrontServers = @(),
 
     [Parameter(Mandatory = $False)]
     [Array]$DeliveryGroups = @(),
+
+    [Parameter(Mandatory = $False)]
+    [Array]$UserFilter = @(),
 
     [Parameter(Mandatory = $False)]
     [string]$ReportFolder = "c:\Temp",
@@ -208,40 +219,55 @@ StartIteration
 $AllUsers = @()
 
 foreach ($Controller in $Controllers) {
-    Write-Log -Message "Processing sessions on Controller $($Controller)" -Level Info
-    foreach ($StoreFront in $StoreFrontServers) {
-        Write-Log -Message "Processing sessions launched via StoreFront Server (Pattern Match): $($StoreFront)"
-        try {
-            if ($DeliveryGroups.Count -eq "0") {
-                Write-Log -Message "No Delivery Group filtering specified. Searching all Delivery Groups" -Level Info
-                $Sessions = Get-BrokerSession -AdminAddress $Controller | Where-Object {$_.LaunchedViaHostName -like "*$StoreFront*"}
-            }
-            else {
-                Write-Log -Message "Delivery Group filtering enabled" -Level info
-                foreach ($DG in $DeliveryGroups) {
-                    Write-Log -Message "Searching Delivery Group: $($DG)" -Level Info
-                }
-                $Sessions = Get-BrokerSession -AdminAddress $Controller | Where-Object {$_.LaunchedViaHostName -like "*$StoreFront*" -and $_.DesktopGroupName -in $DeliveryGroups}
-            }
-            $SessionCount = ($Sessions | Measure-Object).Count
-            Write-Log -Message "Found $($SessionCount) sessions launched via StoreFront Server (Pattern Match): $($StoreFront)" -Level Info
-            $AllUsers += $Sessions
-        }
-        catch {
-            Write-Log -Message $_ -Level Warn
-            Break
-        }
-
+    Write-Log -Message "Controller $($Controller): Processing sessions" -Level Info
+    if ($StoreFrontServers.Count -eq "0") {
+        Write-Log -Message "Controller $($Controller): No StoreFront StoreFront filtering specified. Including all StoreFront Servers" -Level Info
+        $Sessions = Get-BrokerSession -AdminAddress $Controller -MaxRecordCount 100000
+        $SessionCount = ($Sessions | Measure-Object).Count
+        Write-Log -Message "Controller $($Controller): Found $($SessionCount) sessions" -Level Info
+        $AllUsers += $Sessions
     }
+    else {
+        Write-Log -Message "Controller $($Controller): StoreFront Server filtering enabled" -Level info
+        foreach ($StoreFront in $StoreFrontServers) {
+            Write-Log -Message "Controller $($Controller): Processing sessions launched via StoreFront Server (Pattern Match): $($StoreFront)"
+            try {
+                if ($DeliveryGroups.Count -eq "0") {
+                    Write-Log -Message "Controller $($Controller): No Delivery Group filtering specified. Searching all Delivery Groups" -Level Info
+                    $Sessions = Get-BrokerSession -AdminAddress $Controller -MaxRecordCount 100000 | Where-Object {$_.LaunchedViaHostName -like "*$StoreFront*"}
+                }
+                else {
+                    Write-Log -Message "Controller $($Controller): Delivery Group filtering enabled" -Level info
+                    foreach ($DG in $DeliveryGroups) {
+                        Write-Log -Message "Controller $($Controller): Searching Delivery Group: $($DG)" -Level Info
+                    }
+                    $Sessions = Get-BrokerSession -AdminAddress $Controller -MaxRecordCount 100000 | Where-Object {$_.LaunchedViaHostName -like "*$StoreFront*" -and $_.DesktopGroupName -in $DeliveryGroups}
+                }
+                $SessionCount = ($Sessions | Measure-Object).Count
+                Write-Log -Message "Controller $($Controller): Found $($SessionCount) sessions launched via StoreFront Server (Pattern Match): $($StoreFront)" -Level Info
+                $AllUsers += $Sessions
+            }
+            catch {
+                Write-Log -Message $_ -Level Warn
+                Break
+            }
+        }
+    }
+}
+
+#Filter Users
+if ($UserFilter.count -ne 0) {
+    $AllUsers = $AllUsers | Where-Object {$_.UserName -in $UserFilter}
 }
 
 # Create report for output
 $Report = @()
 
 foreach ($User in $AllUsers) {
+    try {
     $UserDetails = New-Object PSObject
 
-    $ADUser = Get-ADUser -Filter "UserPrincipalName -eq '$($User.UserUPN)'" -Properties *
+    $ADUser = Get-ADUser -Filter "UserPrincipalName -eq '$($User.UserUPN)'" -Properties * -ErrorAction Stop
 
     $UserDetails = New-Object PSObject -Property @{
         FirstName = $ADUser.GivenName
@@ -256,6 +282,10 @@ foreach ($User in $AllUsers) {
     }
 
     $report += $UserDetails
+    }
+    Catch {
+        Write-Log -Message "$_" -Level Warn
+    }
 }
 
 $Count = ($AllUsers | Measure-Object).Count
