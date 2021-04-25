@@ -1,0 +1,141 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "australiaeast"
+        },
+        "citrixAdcReleaseVersion": {
+            "value": "netscalervpx-130"
+        },
+        "citrixAdcSubscription": {
+            "value": "netscalerbyol"
+        },
+        "virtualMachineName": {
+            "value": "citrix-adc-vpx"
+        },
+        "virtualMachineSize": {
+            "value": "Standard_DS3_v2"
+        },
+        "diagnosticsStorageNewOrExisting": {
+            "value": "new"
+        },
+        "diagnosticsStorageAccountName": {
+            "value": "citrixadcvpx488f8abad8"
+        },
+        "diagnosticsStorageAccountType": {
+            "value": "Standard_LRS"
+        },
+        "diagnosticsStorageAccountResourceGroupName": {
+            "value": "RG-AE-ADC"
+        },
+        "adminUsername": {
+            "value": "JKindon"
+        },
+        "authenticationType": {
+            "value": "password"
+        },
+        "adminPasswordOrKey": {
+            "value": "P@ssword123!!"
+        },
+        "osDiskType": {
+            "value": "Premium_LRS"
+        },
+        "publishMonitoringMetrics": {
+            "value": false
+        },
+        "virtualNetworkName": {
+            "value": "VNET-AE-Kindon"
+        },
+        "acceleratedNetworkingManagement": {
+            "value": true
+        },
+        "acceleratedNetworkingClient": {
+            "value": true
+        },
+        "acceleratedNetworkingServer": {
+            "value": true
+        },
+        "vnetResourceGroup": {
+            "value": "RG-AE-General"
+        },
+        "vnetNewOrExisting": {
+            "value": "existing"
+        },
+        "addressPrefix": {
+            "value": "172.30.0.0/16"
+        },
+        "managementSubnetName": {
+            "value": "subnet-adc-management"
+        },
+        "managementSubnetPrefix": {
+            "value": "172.30.3.0/24"
+        },
+        "clientSubnetName": {
+            "value": "subnet-adc-frontend"
+        },
+        "clientSubnetPrefix": {
+            "value": "172.30.4.0/24"
+        },
+        "serverSubnetName": {
+            "value": "subnet-adc-backend"
+        },
+        "serverSubnetPrefix": {
+            "value": "172.30.5.0/24"
+        },
+        "assignPublicIp": {
+            "value": true
+        },
+        "publicIpNewOrExisting0": {
+            "value": "new"
+        },
+        "publicIpName0": {
+            "value": "citrix-adc-vpx-nsip-0"
+        },
+        "publicIpDns0": {
+            "value": "citrix-adc-vpx-nsip-0-488f8abad8"
+        },
+        "publicIpResourceGroupName0": {
+            "value": "RG-AE-ADC"
+        },
+        "publicIpNewOrExisting1": {
+            "value": "new"
+        },
+        "publicIpName1": {
+            "value": "citrix-adc-vpx-nsip-1"
+        },
+        "publicIpDns1": {
+            "value": "citrix-adc-vpx-nsip-1-488f8abad8"
+        },
+        "publicIpResourceGroupName1": {
+            "value": "RG-AE-ADC"
+        },
+        "assignPublicIp2": {
+            "value": true
+        },
+        "publicIpNewOrExisting2": {
+            "value": "new"
+        },
+        "publicIpName2": {
+            "value": "citrix-adc-vpx-vip"
+        },
+        "publicIpDns2": {
+            "value": "citrix-adc-vpx-vip-488f8abad8"
+        },
+        "publicIpResourceGroupName2": {
+            "value": "RG-AE-ADC"
+        },
+        "publicInboundPorts": {
+            "value": "-22-80-443-"
+        },
+        "lbsku": {
+            "value": "Standard"
+        },
+        "lbtier": {
+            "value": "Regional"
+        },
+        "publicIpsku": {
+            "value": "Standard"
+        }
+    }
+}
