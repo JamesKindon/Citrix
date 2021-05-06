@@ -14,7 +14,6 @@
 # Parameters
 # ============================================================================
 
-# Parameter help description
 Param(
     [Parameter(Mandatory = $false)]
     [ValidateSet("True","False")]
