@@ -8,12 +8,46 @@
 #>
 
 #Requires -Version 3
+
+#region Params
+# ============================================================================
+# Parameters
+# ============================================================================
+
+# Parameter help description
+Param(
+    [Parameter(Mandatory = $false)]
+    [ValidateSet("True","False")]
+    [string]$CheckProgPath = "False" #True or False
+)
+#endregion
+
+#region Variables
+# ============================================================================
+# Variables
+# ============================================================================
 $User = $Env:username
 $ProgPath = $env:LOCALAPPDATA + "\Microsoft\Teams\Current\Teams.exe"
-if (Test-Path $progPath) {
+$ruleName = "Teams.exe for user $User"
+#endregion
+
+#Region Execute
+# ============================================================================
+# Execute
+# ============================================================================
+
+if ($CheckProgPath -eq "True") {
+    if (Test-Path $progPath) {
+        if (-not (Get-NetFirewallApplicationFilter -Program $progPath -ErrorAction SilentlyContinue)) {
+            "UDP", "TCP" | ForEach-Object { New-NetFirewallRule -DisplayName $ruleName -Direction Inbound -Profile Domain,Private -Program $progPath -Action Allow -Protocol $_ }
+            Clear-Variable ruleName
+        }
+    }
+}
+else {
     if (-not (Get-NetFirewallApplicationFilter -Program $progPath -ErrorAction SilentlyContinue)) {
-        $ruleName = "Teams.exe for user $User"
         "UDP", "TCP" | ForEach-Object { New-NetFirewallRule -DisplayName $ruleName -Direction Inbound -Profile Domain,Private -Program $progPath -Action Allow -Protocol $_ }
         Clear-Variable ruleName
     }
 }
+#endregion
