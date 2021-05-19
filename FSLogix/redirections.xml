@@ -25,7 +25,6 @@
  <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\SwiftShader</Exclude>
  <Exclude Copy="0">AppData\Local\Google\Chrome\User Data\PepperFlash</Exclude>
  <Exclude Copy="0">AppData\Local\Microsoft\Edge\User Data\Default\Cache</Exclude>
- <Exclude Copy="0">AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cache</Exclude>
  <Exclude Copy="0">AppData\Local\BraveSoftware\Brave-Browser\User Data\Default\Cache</Exclude>
  <Exclude Copy="0">AppData\Local\Microsoft\Windows\WER</Exclude>
  <Exclude Copy="0">AppData\Local\Microsoft\Terminal Server Client\Cache</Exclude>
