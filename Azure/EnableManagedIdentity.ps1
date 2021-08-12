@@ -66,7 +66,7 @@ function AssignManagedIdentity {
         else {
             try {
                 $null = Update-AzVM -VM $VM -ResourceGroupName $RG -IdentityType $IdentityType -IdentityID $ManagedIdentityID -ErrorAction Stop
-                Write-Output "VM: $($VM.Name) successfully assiged managed identity: $(Split-Path -leaf $ManagedIdentityID)"
+                Write-Output "VM: $($VM.Name) successfully assigned managed identity: $(Split-Path -leaf $ManagedIdentityID)"
                 $Global:TotalSuccessCount ++
             }
             catch {
