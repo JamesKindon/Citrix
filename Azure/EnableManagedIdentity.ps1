@@ -17,7 +17,7 @@
 # ============================================================================
 Param(
     [Parameter(Mandatory = $false)]
-    [string]$isAzureRunbook = "false", #Set to true if using an Azure Runbook, this will move the authentication model to the Automation Account
+    [string]$isAzureRunbook = "true", #Set to true if using an Azure Runbook, this will move the authentication model to the Automation Account
 
     [Parameter(Mandatory = $false)]
     [Array]$ResourceGroups = ("RG-TBD1","RG-TBD2"), #Array of Resource Groups to query
