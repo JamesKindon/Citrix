@@ -9,6 +9,7 @@
     This Script is desiged to compliment Citrix MCS deployments where on-demand provisioning is used, however is not limited to that use case
     WARNING: The only checks that are completed are those associated with the nic being attached to a machine, and the power state of that machine 
     WARNING: You need to ensure that the machine spec which consumes the NIC is capable of accelerated Networking else, you will not land in a happy place
+    WARNING: You must specify the subscription ID and not the name
     26.10.2020 - James Kindon Initial Release
 #>
 
@@ -24,7 +25,7 @@ Param(
     [Array]$ResourceGroups = ("RG-TBD1","RG-TBD2"), #Array of Resource Groups to query
 
     [Parameter(Mandatory = $false)]
-    [Array]$SubscriptionList = ("Sub-TBD1","Sub-TBD2"), #Array of Subscription ID's to query. Subscription ID. Not name
+    [Array]$SubscriptionList = ("Sub-ID-TBD1","Sub-ID-TBD2"), #Array of Subscription ID's to query. Subscription ID. Not name
 
     [Parameter(Mandatory = $false)]
     [Array]$ExcludedNameList = ("") #Array of NIC names to NOT process, Supports wildcard name patterns
