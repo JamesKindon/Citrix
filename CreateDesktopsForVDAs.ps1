@@ -5,7 +5,6 @@
     Creates a Tag per VDA and Creates a dedicated desktop to launch only against that Tag. 
     Original Script by Martin Zugec. Original detail: https://www.citrix.com/blogs/2017/04/17/how-to-assign-desktops-to-specific-servers-in-xenapp-7/
     Updated by James Kindon
-
 .PARAMETER DesktopGroupName
     Desktop Group name to target. Defaults to * all multi-session Desktop Grooups
 .PARAMETER UserGroups
@@ -322,8 +321,6 @@ ForEach ($m_VDA in $(Get-BrokerMachine -SessionSupport MultiSession -DesktopGrou
 
         $Count ++
 }       
-
-######
 
 StopIteration
 Exit 0
