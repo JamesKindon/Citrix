@@ -104,7 +104,7 @@ $Lbvs_SF_VIP_IP                 =   ($Config | Where-Object { $_.Setting -eq "Lb
 $SF_RedirectURL                 =   ($Config | Where-Object { $_.Setting -eq "SF_RedirectURL" }).Value
 $SF_RedirUrl                    =   ($Config | Where-Object { $_.Setting -eq "SF_RedirUrl" }).Value
 $SF_ResPol_Pattern              =   ($Config | Where-Object { $_.Setting -eq "SF_ResPol_Pattern" }).Value
-
+$SF_Cert                        =   ($Config | Where-Object { $_.Setting -eq "SF_Cert" }).Value
 $Monitor_StoreFront             =   ($Config | Where-Object { $_.Setting -eq "Monitor_StoreFront" }).Value                                                   
 $svcg_Citrix_SF_80              =   ($Config | Where-Object { $_.Setting -eq "svcg_Citrix_SF_80" }).Value                                                 
 $svcg_Citrix_SF_443             =   ($Config | Where-Object { $_.Setting -eq "svcg_Citrix_SF_443" }).Value                                               
@@ -382,7 +382,7 @@ if ($LBStoreFront.IsPresent) {
     Write-Output "bind lb vserver $lbvs_SF_VIP_Name -policyName $SF_ResPol -priority 100 -gotoPriorityExpression END -type REQUEST" | Out-File -Append $ConfigFile
 
     # SSL Certs
-    Write-Output "bind sslvserver $lbvs_SF_VIP_Name -certkeyName $SF_Cert" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_SF_VIP_Name -certkeyName $SF_Cert" | Out-File -Append $ConfigFile
     Write-Output "set ssl vserver $lbvs_SF_VIP_Name -ssl3 DISABLED -tls12 ENABLED -HSTS ENABLED -maxage 1576800000" | Out-File -Append $ConfigFile
     Write-Output "unbind ssl vserver $lbvs_SF_VIP_Name -cipherName DEFAULT" | Out-File -Append $ConfigFile
     Write-Output "bind ssl vserver $lbvs_SF_VIP_Name -cipherName ssllabs-smw-q2-2018" | Out-File -Append $ConfigFile
@@ -451,7 +451,7 @@ if ($LBDirector.IsPresent) {
     Write-Output "bind lb vserver $lbvs_Dir_VIP_Name -policyName $Dir_ResPol -priority 100 -gotoPriorityExpression END -type REQUEST" | Out-File -Append $ConfigFile
 
     # SSL
-    Write-Output "bind sslvserver $lbvs_Dir_VIP_Name -certkeyName $Dir_Cert" | Out-File -Append $ConfigFile
+    Write-Output "bind ssl vserver $lbvs_Dir_VIP_Name -certkeyName $Dir_Cert" | Out-File -Append $ConfigFile
 
     Write-Output "set ssl vserver $lbvs_Dir_VIP_Name -ssl3 DISABLED -tls12 ENABLED -HSTS ENABLED -maxage 157680000" | Out-File -Append $ConfigFile
     Write-Output "unbind ssl vserver $lbvs_Dir_VIP_Name -cipherName DEFAULT" | Out-File -Append $ConfigFile
@@ -489,7 +489,7 @@ if ($LBADDS.IsPresent) {
 
     #Monitors
     Write-Output "add lb monitor $mon_LDAP LDAP -scriptName nsldap.pl -dispatcherIP 127.0.0.1 -dispatcherPort 3013 -password $LDAPBindPW -LRTM DISABLED -secure YES -baseDN $LDAPBase -bindDN $LDAPBindDN -filter cn=builtin" | Out-File -Append $ConfigFile
-    Write-Output "add lb monitor $mon_DNS_53 DNS -query $DNS_Query -queryType Address -LRTM DISABLED -IPAddress $DNS_Query_IP"
+    Write-Output "add lb monitor $mon_DNS_53 DNS -query $DNS_Query -queryType Address -LRTM DISABLED -IPAddress $DNS_Query_IP" | Out-File -Append $ConfigFile
 
     #Service Group
     Write-Verbose "Setting DNS Service Group Name: $svcg_DNS_53" -Verbose
@@ -647,7 +647,7 @@ if ($LBAzureMFA.IsPresent) {
 
     Write-Output "add serviceGroup $svcg_AzureMFA_Radius_1812 RADIUS -maxClient 0 -maxReq 0 -cip DISABLED -usip NO -useproxyport NO -cltTimeout 120 -svrTimeout 120 -CKA NO -TCPB NO -CMP NO -comment ""Azure MFA RADIUS Service Group""" | Out-File -Append $ConfigFile
     Write-Output "bind serviceGroup $svcg_AzureMFA_Radius_1812 $AzureMFA_Server1_Name 1812" | Out-File -Append $ConfigFile
-    Write-Output "bind serviceGroup $svcg_AzureMFA_Radius_1812 $AzureMFA_Server1_Name 1812" | Out-File -Append $ConfigFile
+    Write-Output "bind serviceGroup $svcg_AzureMFA_Radius_1812 $AzureMFA_Server2_Name 1812" | Out-File -Append $ConfigFile
     
     # Monitors
     Write-Verbose "Setting AzureMFA Monitor Name: $Monitor_AzureMFA" -Verbose
@@ -660,7 +660,7 @@ if ($LBAzureMFA.IsPresent) {
     Write-Verbose "Setting AzureMFA Load Balancer VIP Name: $lbvs_AzureMFA_VIP_Name" -Verbose
     Write-Verbose "Setting AzureMFA Load Balancer VIP IP: $Lbvs_AzureMFA_VIP_IP" -Verbose
 
-    Write-Output "add lb vserver $lbvs_AzureMFA_VIP_Name $Lbvs_AzureMFA_VIP_IP 1812 -persistenceType RULE -lbMethod TOKEN -rule CLIENT.UDP.RADIUS.USERNAME -cltTimeout 120" | Out-File -Append $ConfigFile
+    Write-Output "add lb vserver $lbvs_AzureMFA_VIP_Name RADIUS $Lbvs_AzureMFA_VIP_IP 1812 -persistenceType RULE -lbMethod TOKEN -rule CLIENT.UDP.RADIUS.USERNAME -cltTimeout 120" | Out-File -Append $ConfigFile
     Write-Output "bind lb vserver $lbvs_AzureMFA_VIP_Name $svcg_AzureMFA_Radius_1812" | Out-File -Append $ConfigFile
     
 }
