@@ -146,8 +146,10 @@ $Services = Get-Service -DisplayName "Kaseya Agent*"
 if ($Null -ne $Services) {
     foreach ($Service in $Services) {
         try {
+            Write-Log -message "Actioning service $($Service.Name)" -Level Info
             Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
             Start-Service -Name $Service.Name -ErrorAction Stop
+            Write-Log -message  "Success" Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn

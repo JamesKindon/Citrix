@@ -130,8 +130,10 @@ $Services = Get-Service -DisplayName "Kaseya Agent*" -ErrorAction Stop
 if ($null -ne $Services) {
     foreach ($Service in $Services) {
         try {
+            Write-Log -message "Actioning service $($Service.Name)" -Level Info
             Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
             Stop-Service -Name $Service.Name -ErrorAction Stop -Force
+            Write-Log -message  "Success" Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn
@@ -147,7 +149,9 @@ if ($null -ne $Services) {
 Write-Log -Message "Attempting to delete registry keys" -Level Info
 foreach ($Value in $ValuesToDelete) {
     try {
+        Write-Log -message "Deleting from $($FullPath) Item $($Value)" -Level Info
         Remove-ItemProperty -Path $FullPath -Name $Value -Verbose -ErrorAction Stop
+        Write-Log -message  "Success" Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
