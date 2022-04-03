@@ -53,9 +53,9 @@ if (!(Test-Path -Path (($IniLocation) + "_backup"))) {
 
 # Alter the INI file
 $ini = $ini -replace '^(User_Name\s+).*$' , "`$1$FinalID"
-$ini = $ini -replace'^(Password\s+).*$' , "`$1NewKaseyaAgent-"
-#$ini = $ini -replace'^(Agent_Guid\s+).*$' , "`$1TBD-"
-#$ini = $ini -replace'^(KServer_Bind_ID\s+).*$' , "`$1TBD-"
+$ini = $ini -replace '^(Password\s+).*$' , "`$1NewKaseyaAgent-"
+#$ini = $ini -replace '^(Agent_Guid\s+).*$' , "`$1TBD-"
+#$ini = $ini -replace '^(KServer_Bind_ID\s+).*$' , "`$1TBD-"
 $ini | Out-File $IniLocation -Force
 
 # Handle Service Start
