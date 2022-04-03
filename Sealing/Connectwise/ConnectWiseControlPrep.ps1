@@ -1,8 +1,8 @@
 <#
 .SYNOPSIS
-    Preps Kaseya for Provisioning
+    Preps Connectwise Connect for Provisioning
 .DESCRIPTION
-    https://techtalkpro.net/2017/06/02/how-to-install-the-kaseya-vsa-agent-on-a-non-persistent-machine/ 
+    https://docs.connectwise.com/ConnectWise_Control_Documentation/Get_started/Knowledge_base/Image_a_machine_with_an_installed_agent
 .EXAMPLE
 
 #>
@@ -13,7 +13,7 @@
 #region Params
 param (
     [Parameter(Mandatory = $false)]
-    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\KaseyaSeal.log",
+    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\ConnectwiseSeal.log",
 
     [Parameter(Mandatory = $false)]
     [int]$LogRollover = 5 # number of days before logfile rollover occurs
@@ -112,10 +112,13 @@ function RollOverlog {
 # Variables
 # ============================================================================
 #region Variables
-$RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
-$CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf
-$FullPath = $RootPath + $CustomerKey
-
+$RootPath = "HKLM:\SYSTEM\CurrentControlSet\Services\"
+$Identifier = Get-ChildItem -Path $RootPath -Recurse -ErrorAction SilentlyContinue
+$Identifier = ($Identifier | Where-Object {$_.Name -like "*ScreenConnect Client*" -and $_.Name -notlike "*EventLog*"}).Name
+$CustomerKey = $Identifier | Split-Path -Leaf
+$Fullpath = $RootPath + $CustomerKey
+$InitialValue = (Get-ItemProperty -Path $Fullpath -Name "ImagePath").ImagePath
+$NewValue = $InitialValue -replace "s=(.*?)&.*?",""
 #endregion
 
 # ============================================================================
@@ -124,20 +127,22 @@ $FullPath = $RootPath + $CustomerKey
 #Region Execute
 
 # Handle Service Stop
-try {
-    Write-Log -Message "Attempting to stop services" -Level Info
-    Get-Service -DisplayName "Kaseya Agent*" | Stop-Service -Force -ErrorAction Stop    
-}
-catch {
-    Write-Log -Message $_ -Level Warn
-    Write-Log -Message "Failed to stop services" -Level Warn
+Write-Log -Message "Attempting to stop and disable services" -Level Info
+$Services = Get-Service -DisplayName "ScreenConnect Client*"
+foreach ($Service in $Services) {
+    try {
+        Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
+        Stop-Service -Name $Service.Name -ErrorAction Stop -Force
+    }
+    catch {
+        Write-Log -Message $_ -Level Warn
+        Write-Log -Message "Failed to stop service $($Service.Name)" -Level Warn
+    }
 }
 
 # Handle registry settings
 try {
-    Remove-ItemProperty -Path $FullPath -Name "AgentGUID" -Verbose -ErrorAction Stop
-    Remove-ItemProperty -Path $FullPath -Name "MachineID" -Verbose -ErrorAction Stop
-    Remove-ItemProperty -Path $FullPath -Name "PValue" -Verbose -ErrorAction Stop
+    Set-ItemProperty -Path $FullPath -Name "ImagePath" -Value $NewValue -ErrorAction Stop  
 }
 catch {
     Write-Log -Message $_ -Level Warn
