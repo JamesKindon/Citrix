@@ -31,11 +31,10 @@ param (
 #region Variables
 $GroupID = ".group.fun" # keep the "." - this could be an ADMX value in BISF
 
-$IniLocation = "C:\users\James Kindon\Downloads\KaseyaD.ini" #- this could be an ADMX value in BISF  ## need to pull this location from the registry
-
-#$RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
-#$CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf
-#$IniLocation = $RootPath + $CustomerKey + "\" + "KaseyaD.ini"
+$RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
+$CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf # Find Customer ID
+$InstallPath = (Get-ItemProperty -Path ($RootPath + $CustomerKey)).Path # Find custom install location for INI
+$IniLocation = $InstallPath + "\" + "KaseyaD.ini"
 
 $FinalID = $env:COMPUTERNAME + $GroupID
 $Ini = Get-Content $IniLocation
@@ -53,10 +52,10 @@ if (!(Test-Path -Path (($IniLocation) + "_backup"))) {
 }
 
 # Alter the INI file
-$ini = $ini -replace '^User_Name.+$', "User_Name                  $FinalID" #spacing is for consistency with source ini file
-$ini = $ini -replace '^Password.+$', "Password                   NewKaseyaAgent-" #spacing is for consistency with source ini file
-#$ini = $ini -replace '^Agent_Guid.+$', "Agent_Guid                 NewKaseyaAgent-" #spacing is for consistency with source ini file
-#$ini = $ini -replace '^KServer_Bind_ID.+$', "KServer_Bind_ID            NewKaseyaAgent-" #spacing is for consistency with source ini file
+$ini = $ini -replace '^(User_Name\s+).*$' , "`$1$FinalID"
+$ini = $ini -replace'^(Password\s+).*$' , "`$1NewKaseyaAgent-"
+#$ini = $ini -replace'^(Agent_Guid\s+).*$' , "`$1TBD-"
+#$ini = $ini -replace'^(KServer_Bind_ID\s+).*$' , "`$1TBD-"
 $ini | Out-File $IniLocation -Force
 
 # Handle Service Start
