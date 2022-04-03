@@ -139,13 +139,15 @@ foreach ($Service in $Services) {
 
 
 # Handle registry settings
-try {
-    Remove-ItemProperty -Path $FullPath -Name "AgentGUID" -Verbose -ErrorAction Stop
-    Remove-ItemProperty -Path $FullPath -Name "MachineID" -Verbose -ErrorAction Stop
-    Remove-ItemProperty -Path $FullPath -Name "PValue" -Verbose -ErrorAction Stop
+$ValuesToDelete = "AgentGUID","MachineID","PValue"
+foreach ($Value in $ValuesToDelete) {
+    try {
+        Remove-ItemProperty -Path $FullPath -Name $Value -Verbose -ErrorAction Stop
+    }
+    catch {
+        Write-Log -Message $_ -Level Warn
+        Write-Log -Message "Failed to delete registry key $($Value)" -Level Warn
+    }
 }
-catch {
-    Write-Log -Message $_ -Level Warn
-    Write-Log -Message "Failed to update registry keys" -Level Warn
-}
+
 #endregion
