@@ -13,7 +13,7 @@
 #region Params
 param (
     [Parameter(Mandatory = $false)]
-    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\ConnectwiseSeal.log",
+    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\ConnectwiseSealPrep.log",
 
     [Parameter(Mandatory = $false)]
     [int]$LogRollover = 5 # number of days before logfile rollover occurs
@@ -129,15 +129,19 @@ $NewValue = $InitialValue -replace "s=(.*?)&.*?",""
 # Handle Service Stop
 Write-Log -Message "Attempting to stop and disable services" -Level Info
 $Services = Get-Service -DisplayName "ScreenConnect Client*"
-foreach ($Service in $Services) {
-    try {
-        Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
-        Stop-Service -Name $Service.Name -ErrorAction Stop -Force
+if ($null -ne $Services) {
+    foreach ($Service in $Services) {
+        try {
+            Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
+            Stop-Service -Name $Service.Name -ErrorAction Stop -Force
+        }
+        catch {
+            Write-Log -Message $_ -Level Warn
+            Write-Log -Message "Failed to stop service $($Service.Name)" -Level Warn
+        }
     }
-    catch {
-        Write-Log -Message $_ -Level Warn
-        Write-Log -Message "Failed to stop service $($Service.Name)" -Level Warn
-    }
+} else {
+    Write-Log -Message "No services found" -Level Warn
 }
 
 # Handle registry settings

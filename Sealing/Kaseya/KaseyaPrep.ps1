@@ -115,6 +115,7 @@ function RollOverlog {
 $RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
 $CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf
 $FullPath = $RootPath + $CustomerKey
+$ValuesToDelete = "AgentGUID","MachineID","PValue"
 
 #endregion
 
@@ -125,21 +126,25 @@ $FullPath = $RootPath + $CustomerKey
 
 # Handle Service Stop
 Write-Log -Message "Attempting to stop and disable services" -Level Info
-$Services = Get-Service -DisplayName "Kaseya Agent*"
-foreach ($Service in $Services) {
-    try {
-        Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
-        Stop-Service -Name $Service.Name -ErrorAction Stop -Force
+$Services = Get-Service -DisplayName "Kaseya Agent*" -ErrorAction Stop
+if ($null -ne $Services) {
+    foreach ($Service in $Services) {
+        try {
+            Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
+            Stop-Service -Name $Service.Name -ErrorAction Stop -Force
+        }
+        catch {
+            Write-Log -Message $_ -Level Warn
+            Write-Log -Message "Failed to stop service $($Service.Name)" -Level Warn
+        }
     }
-    catch {
-        Write-Log -Message $_ -Level Warn
-        Write-Log -Message "Failed to stop service $($Service.Name)" -Level Warn
-    }
+} else {
+    Write-Log -Message "No services found" -Level Warn
 }
 
 
 # Handle registry settings
-$ValuesToDelete = "AgentGUID","MachineID","PValue"
+Write-Log -Message "Attempting to delete registry keys" -Level Info
 foreach ($Value in $ValuesToDelete) {
     try {
         Remove-ItemProperty -Path $FullPath -Name $Value -Verbose -ErrorAction Stop

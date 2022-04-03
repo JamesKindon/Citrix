@@ -62,15 +62,20 @@ $ini | Out-File $IniLocation -Force
 # Handle Service Start
 Write-Log -Message "Attempting to enable and start services" -Level Info
 $Services = Get-Service -DisplayName "Kaseya Agent*"
-foreach ($Service in $Services) {
-    try {
-        Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
-        Start-Service -Name $Service.Name -ErrorAction Stop
+if ($Null -ne $Services) {
+    foreach ($Service in $Services) {
+        try {
+            Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
+            Start-Service -Name $Service.Name -ErrorAction Stop
+        }
+        catch {
+            Write-Log -Message $_ -Level Warn
+            Write-Log -Message "Failed to start service $($Service.Name)" -Level Warn
+        }
     }
-    catch {
-        Write-Log -Message $_ -Level Warn
-        Write-Log -Message "Failed to start service $($Service.Name)" -Level Warn
-    }
+} else {
+    Write-Log -Message "No services found" -Level Warn
 }
+
 
 #endregion

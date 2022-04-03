@@ -12,7 +12,7 @@
 #region Params
 param (
     [Parameter(Mandatory = $false)]
-    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\KaseyaSealPers.log",
+    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\ConnectwiseSealPers.log",
 
     [Parameter(Mandatory = $false)]
     [int]$LogRollover = 5 # number of days before logfile rollover occurs
@@ -39,15 +39,20 @@ param (
 # Handle Service Start
 Write-Log -Message "Attempting to enable and start services" -Level Info
 $Services = Get-Service -DisplayName "ScreenConnect Client*"
-foreach ($Service in $Services) {
-    try {
-        Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
-        Start-Service -Name $Service.Name -ErrorAction Stop
+if ($Null -ne $Services) {
+    foreach ($Service in $Services) {
+        try {
+            Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
+            Start-Service -Name $Service.Name -ErrorAction Stop
+        }
+        catch {
+            Write-Log -Message $_ -Level Warn
+            Write-Log -Message "Failed to start service $($Service.Name)" -Level Warn
+        }
     }
-    catch {
-        Write-Log -Message $_ -Level Warn
-        Write-Log -Message "Failed to start service $($Service.Name)" -Level Warn
-    }
+} else {
+    Write-Log -Message "No services found" -Level Warn
 }
+
 
 #endregion
