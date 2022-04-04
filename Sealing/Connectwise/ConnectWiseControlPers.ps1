@@ -105,6 +105,33 @@ function RollOverlog {
         Write-Log -Message "Old logfile name is now $NewName" -Level Info
     }    
 }
+
+function Start-Stopwatch {
+    Write-Log -Message "Starting Timer" -Level Info
+    $Global:StopWatch = [System.Diagnostics.Stopwatch]::StartNew()
+}
+
+function Stop-Stopwatch {
+    Write-Log -Message "Stopping Timer" -Level Info
+    $StopWatch.Stop()
+    if ($StopWatch.Elapsed.TotalSeconds -le 1) {
+        Write-Log -Message "Script processing took $($StopWatch.Elapsed.TotalMilliseconds) ms to complete." -Level Info
+    }
+    else {
+        Write-Log -Message "Script processing took $($StopWatch.Elapsed.TotalSeconds) seconds to complete." -Level Info
+    }
+}
+
+function StartIteration {
+    Write-Log -Message "--------Starting Iteration--------" -Level Info
+    RollOverlog
+    Start-Stopwatch
+}
+
+function StopIteration {
+    Stop-Stopwatch
+    Write-Log -Message "--------Finished Iteration--------" -Level Info
+}
 #endregion
 
 # ============================================================================
@@ -117,6 +144,8 @@ function RollOverlog {
 # Execute
 # ============================================================================
 #Region Execute
+
+StartIteration
 
 # Handle Service Start
 Write-Log -Message "Attempting to enable and start services" -Level Info
@@ -139,4 +168,7 @@ if ($Null -ne $Services) {
 }
 
 Write-Log -Message "Script Complete" -Level Info
+
+StopIteration
+Exit 0
 #endregion

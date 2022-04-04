@@ -1,11 +1,12 @@
 <#
 .SYNOPSIS
-    Personalises Kaseya for Provisioning
+    Prepares PolicyPak (assumes Loose mode matching) for provisioning
 .DESCRIPTION
-    https://techtalkpro.net/2017/06/02/how-to-install-the-kaseya-vsa-agent-on-a-non-persistent-machine/ 
+    https://kb.policypak.com/kb/article/883-how-to-install-the-policypak-cloud-client-for-use-in-an-azure-virtual-desktop-image/
+    https://kb.policypak.com/kb/article/1102-why-do-i-see-duplicate-computer-entries-in-policypak-cloud-or-what-is-loose-strict-and-advanced-registration/
 .EXAMPLE
 .NOTES
-    You MUST change the GroupID value to match the Kaseya Group
+    You must update the JoinToken Parameter with your value
 #>
 
 # ============================================================================
@@ -14,13 +15,13 @@
 #region Params
 param (
     [Parameter(Mandatory = $false)]
-    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\KaseyaSealPers.log",
+    [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\PolicyPakSealPrep.log",
 
     [Parameter(Mandatory = $false)]
     [int]$LogRollover = 5, # number of days before logfile rollover occurs
 
     [Parameter(Mandatory = $false)]
-    [string]$GroupID = ".group.fun" # keep the preceeding "." - this could be an ADMX value in BISF
+    [String]$JoinToken = "somejointokenhere"
 )
 #endregion
 
@@ -137,22 +138,12 @@ function StopIteration {
     Stop-Stopwatch
     Write-Log -Message "--------Finished Iteration--------" -Level Info
 }
-
 #endregion
 
 # ============================================================================
 # Variables
 # ============================================================================
 #region Variables
-$RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
-$CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf # Find Customer ID
-$InstallPath = (Get-ItemProperty -Path ($RootPath + $CustomerKey)).Path # Find custom install location for INI
-$IniLocation = $InstallPath + "\" + "KaseyaD.ini"
-$PathName = "AgentMon.exe" # Custom support service executable
-
-$FinalID = $env:COMPUTERNAME + $GroupID
-$Ini = Get-Content $IniLocation
-
 #endregion
 
 # ============================================================================
@@ -162,61 +153,11 @@ $Ini = Get-Content $IniLocation
 
 StartIteration
 
-# Backup the INI file just in case
-if (!(Test-Path -Path (($IniLocation) + "_backup"))) {
-    Copy-Item -Path $IniLocation -Destination (($IniLocation) + "_backup")
-}
+Write-Log -Message "Attempting to Sysprep PolicyPak" -Level Info
 
-try {
-    Write-Log -Message "Attempting to alter KaseyaD ini file" -Level Info
-    # Alter the INI file
-    $ini = $ini -replace '^(User_Name\s+).*$' , "`$1$FinalID"
-    $ini = $ini -replace '^(Password\s+).*$' , "`$1NewKaseyaAgent-"
-    $ini | Out-File $IniLocation -Force -Encoding utf8
-    Write-Log -Message "Success" -Level Info
-}
-catch {
-    Write-Log -Message $_ -Level Warn
-    Write-Log -Message "Failed to alter ini file" -Level Warn
-}
-
-
-# Handle Service Start
-Write-Log -Message "Attempting to enable and start services" -Level Info
-$Services = Get-Service -DisplayName "Kaseya Agent*"
-if ($Null -ne $Services) {
-    foreach ($Service in $Services) {
-        try {
-            Write-Log -Message "Actioning service $($Service.Name)" -Level Info
-            Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
-            Start-Service -Name $Service.Name -ErrorAction Stop
-            Write-Log -Message "Success" -Level Info
-        }
-        catch {
-            Write-Log -Message $_ -Level Warn
-            Write-Log -Message "Failed to start service $($Service.Name)" -Level Warn
-        }
-    }
-} else {
-    Write-Log -Message "No services found" -Level Warn
-}
-
-# Handle Custom Service
-$CustomServiceName = (Get-WmiObject win32_service | Where-Object {$_.PathName -like "*$PathName*"}).Name
-if ($null -ne $CustomServiceName) {
-    try {
-        Write-Log -message "Actioning service $($CustomServiceName)" -Level Info
-        Set-Service -Name $CustomServiceName -StartupType Automatic -ErrorAction Stop
-        Start-Service -Name $CustomServiceName -ErrorAction Stop
-        Write-Log -Message "Success" -Level Info
-    }
-    catch {
-        Write-Log -Message $_ -Level Warn
-        Write-Log -Message "Failed to start service $($CustomServiceName)" -Level Warn
-    }
-} else {
-    Write-Log -Message "No services found" -Level Warn
-}
+Set-ExecutionPolicy Unrestricted -force
+PPCloud.exe /sysprep /startservicewhennetworkon /JOINTOKEN:$JoinToken
+#PPCloud.exe /sysprep /nextstartwhenuserlogsin /JOINTOKEN:$JoinToken
 
 Write-Log -Message "Script Complete" -Level Info
 
