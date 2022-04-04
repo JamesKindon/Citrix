@@ -5,7 +5,7 @@
     https://techtalkpro.net/2017/06/02/how-to-install-the-kaseya-vsa-agent-on-a-non-persistent-machine/ 
 .EXAMPLE
 .NOTES
-    You MUST change the 
+    You MUST change the GroupID value to match the Kaseya Group
 #>
 
 # ============================================================================
