@@ -142,7 +142,7 @@ try {
     # Alter the INI file
     $ini = $ini -replace '^(User_Name\s+).*$' , "`$1$FinalID"
     $ini = $ini -replace '^(Password\s+).*$' , "`$1NewKaseyaAgent-"
-    $ini | Out-File $IniLocation -Force
+    $ini | Out-File $IniLocation -Force -Encoding utf8
     Write-Log -Message "Success" -Level Info
 }
 catch {
