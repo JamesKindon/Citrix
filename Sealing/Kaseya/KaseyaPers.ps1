@@ -142,10 +142,8 @@ try {
     # Alter the INI file
     $ini = $ini -replace '^(User_Name\s+).*$' , "`$1$FinalID"
     $ini = $ini -replace '^(Password\s+).*$' , "`$1NewKaseyaAgent-"
-    #$ini = $ini -replace '^(Agent_Guid\s+).*$' , "`$1TBD-"
-    #$ini = $ini -replace '^(KServer_Bind_ID\s+).*$' , "`$1TBD-"
     $ini | Out-File $IniLocation -Force
-    Write-Log -message  "Success" Level Info
+    Write-Log -Message "Success" -Level Info
 }
 catch {
     Write-Log -Message $_ -Level Warn
@@ -159,10 +157,10 @@ $Services = Get-Service -DisplayName "Kaseya Agent*"
 if ($Null -ne $Services) {
     foreach ($Service in $Services) {
         try {
-            Write-Log -message "Actioning service $($Service.Name)" -Level Info
+            Write-Log -Message "Actioning service $($Service.Name)" -Level Info
             Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
             Start-Service -Name $Service.Name -ErrorAction Stop
-            Write-Log -message  "Success" Level Info
+            Write-Log -Message "Success" -Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn
@@ -180,7 +178,7 @@ if ($null -ne $CustomServiceName) {
         Write-Log -message "Actioning service $($CustomServiceName)" -Level Info
         Set-Service -Name $CustomServiceName -StartupType Automatic -ErrorAction Stop
         Start-Service -Name $CustomServiceName -ErrorAction Stop
-        Write-Log -message  "Success" Level Info
+        Write-Log -Message "Success" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -190,4 +188,5 @@ if ($null -ne $CustomServiceName) {
     Write-Log -Message "No services found" -Level Warn
 }
 
+Write-Log -Message "Script Complete" -Level Info
 #endregion

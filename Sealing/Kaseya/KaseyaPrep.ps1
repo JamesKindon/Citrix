@@ -130,10 +130,10 @@ $Services = Get-Service -DisplayName "Kaseya Agent*" -ErrorAction Stop
 if ($null -ne $Services) {
     foreach ($Service in $Services) {
         try {
-            Write-Log -message "Actioning service $($Service.Name)" -Level Info
+            Write-Log -Message "Actioning service $($Service.Name)" -Level Info
             Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
             Stop-Service -Name $Service.Name -ErrorAction Stop -Force
-            Write-Log -message  "Success" Level Info
+            Write-Log -Message "Success" -Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn
@@ -151,7 +151,7 @@ if ($null -ne $CustomServiceName) {
         Write-Log -message "Actioning service $($CustomServiceName)" -Level Info
         Set-Service -Name $CustomServiceName -StartupType Disabled -ErrorAction Stop
         Stop-Service -Name $CustomServiceName -ErrorAction Stop -Force
-        Write-Log -message  "Success" Level Info
+        Write-Log -Message "Success" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -167,7 +167,7 @@ foreach ($Value in $ValuesToDelete) {
     try {
         Write-Log -message "Deleting from $($FullPath) Item $($Value)" -Level Info
         Remove-ItemProperty -Path $FullPath -Name $Value -Verbose -ErrorAction Stop
-        Write-Log -message  "Success" Level Info
+        Write-Log -Message "Success" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -175,4 +175,5 @@ foreach ($Value in $ValuesToDelete) {
     }
 }
 
+Write-Log -Message "Script Complete" -Level Info
 #endregion

@@ -132,10 +132,10 @@ $Services = Get-Service -DisplayName "ScreenConnect Client*"
 if ($null -ne $Services) {
     foreach ($Service in $Services) {
         try {
-            Write-Log -message "Actioning service $($Service.Name)" -Level Info
+            Write-Log -Message "Actioning service $($Service.Name)" -Level Info
             Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction Stop
             Stop-Service -Name $Service.Name -ErrorAction Stop -Force
-            Write-Log -message  "Success" Level Info
+            Write-Log -Message "Success" -Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn
@@ -150,10 +150,12 @@ if ($null -ne $Services) {
 try {
     Write-Log -message "Altering ImagePath value with $($NewValue)" -Level Info
     Set-ItemProperty -Path $FullPath -Name "ImagePath" -Value $NewValue -ErrorAction Stop
-    Write-Log -message  "Success" Level Info
+    Write-Log -Message "Success" -Level Info
 }
 catch {
     Write-Log -Message $_ -Level Warn
     Write-Log -Message "Failed to update registry keys" -Level Warn
 }
+
+Write-Log -Message "Script Complete" -Level Info
 #endregion

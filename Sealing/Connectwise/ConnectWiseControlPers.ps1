@@ -124,10 +124,10 @@ $Services = Get-Service -DisplayName "ScreenConnect Client*"
 if ($Null -ne $Services) {
     foreach ($Service in $Services) {
         try {
-            Write-Log -message "Actioning service $($Service.Name)" -Level Info
+            Write-Log -Message "Actioning service $($Service.Name)" -Level Info
             Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction Stop
             Start-Service -Name $Service.Name -ErrorAction Stop
-            Write-Log -message  "Success" Level Info
+            Write-Log -Message "Success" -Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn
@@ -138,5 +138,5 @@ if ($Null -ne $Services) {
     Write-Log -Message "No services found" -Level Warn
 }
 
-
+Write-Log -Message "Script Complete" -Level Info
 #endregion
