@@ -4,6 +4,8 @@
 .DESCRIPTION
     https://techtalkpro.net/2017/06/02/how-to-install-the-kaseya-vsa-agent-on-a-non-persistent-machine/ 
 .EXAMPLE
+.NOTES
+    You MUST change the 
 #>
 
 # ============================================================================
@@ -15,7 +17,10 @@ param (
     [string]$LogPath = [System.Environment]::GetEnvironmentVariable('TEMP','Machine') + "\KaseyaSealPers.log",
 
     [Parameter(Mandatory = $false)]
-    [int]$LogRollover = 5 # number of days before logfile rollover occurs
+    [int]$LogRollover = 5, # number of days before logfile rollover occurs
+
+    [Parameter(Mandatory = $false)]
+    [string]$GroupID = ".group.fun" # keep the preceeding "." - this could be an ADMX value in BISF
 )
 #endregion
 
@@ -111,8 +116,6 @@ function RollOverlog {
 # Variables
 # ============================================================================
 #region Variables
-$GroupID = ".group.fun" # keep the "." - this could be an ADMX value in BISF
-
 $RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
 $CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf # Find Customer ID
 $InstallPath = (Get-ItemProperty -Path ($RootPath + $CustomerKey)).Path # Find custom install location for INI
