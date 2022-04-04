@@ -116,7 +116,7 @@ $RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
 $CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf
 $FullPath = $RootPath + $CustomerKey
 $ValuesToDelete = "AgentGUID","MachineID","PValue"
-
+$PathName = "AgentMon.exe" # Custom support service executable
 #endregion
 
 # ============================================================================
@@ -144,6 +144,22 @@ if ($null -ne $Services) {
     Write-Log -Message "No services found" -Level Warn
 }
 
+# Handle Custom Service
+$CustomServiceName = (Get-WmiObject win32_service | Where-Object {$_.PathName -like "*$PathName*"}).Name
+if ($null -ne $CustomServiceName) {
+    try {
+        Write-Log -message "Actioning service $($CustomServiceName)" -Level Info
+        Set-Service -Name $CustomServiceName -StartupType Disabled -ErrorAction Stop
+        Stop-Service -Name $CustomServiceName -ErrorAction Stop -Force
+        Write-Log -message  "Success" Level Info
+    }
+    catch {
+        Write-Log -Message $_ -Level Warn
+        Write-Log -Message "Failed to stop service $($CustomServiceName)" -Level Warn
+    }
+} else {
+    Write-Log -Message "No services found" -Level Warn
+}
 
 # Handle registry settings
 Write-Log -Message "Attempting to delete registry keys" -Level Info

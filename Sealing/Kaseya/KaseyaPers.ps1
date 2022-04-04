@@ -117,6 +117,7 @@ $RootPath = "HKLM:\SOFTWARE\WOW6432Node\Kaseya\Agent\"
 $CustomerKey = (Get-ChildItem -Path $RootPath -Recurse).Name | Split-Path -Leaf # Find Customer ID
 $InstallPath = (Get-ItemProperty -Path ($RootPath + $CustomerKey)).Path # Find custom install location for INI
 $IniLocation = $InstallPath + "\" + "KaseyaD.ini"
+$PathName = "AgentMon.exe" # Custom support service executable
 
 $FinalID = $env:COMPUTERNAME + $GroupID
 $Ini = Get-Content $IniLocation
@@ -133,12 +134,21 @@ if (!(Test-Path -Path (($IniLocation) + "_backup"))) {
     Copy-Item -Path $IniLocation -Destination (($IniLocation) + "_backup")
 }
 
-# Alter the INI file
-$ini = $ini -replace '^(User_Name\s+).*$' , "`$1$FinalID"
-$ini = $ini -replace '^(Password\s+).*$' , "`$1NewKaseyaAgent-"
-#$ini = $ini -replace '^(Agent_Guid\s+).*$' , "`$1TBD-"
-#$ini = $ini -replace '^(KServer_Bind_ID\s+).*$' , "`$1TBD-"
-$ini | Out-File $IniLocation -Force
+try {
+    Write-Log -Message "Attempting to alter KaseyaD ini file" -Level Info
+    # Alter the INI file
+    $ini = $ini -replace '^(User_Name\s+).*$' , "`$1$FinalID"
+    $ini = $ini -replace '^(Password\s+).*$' , "`$1NewKaseyaAgent-"
+    #$ini = $ini -replace '^(Agent_Guid\s+).*$' , "`$1TBD-"
+    #$ini = $ini -replace '^(KServer_Bind_ID\s+).*$' , "`$1TBD-"
+    $ini | Out-File $IniLocation -Force
+    Write-Log -message  "Success" Level Info
+}
+catch {
+    Write-Log -Message $_ -Level Warn
+    Write-Log -Message "Failed to alter ini file" -Level Warn
+}
+
 
 # Handle Service Start
 Write-Log -Message "Attempting to enable and start services" -Level Info
@@ -160,5 +170,21 @@ if ($Null -ne $Services) {
     Write-Log -Message "No services found" -Level Warn
 }
 
+# Handle Custom Service
+$CustomServiceName = (Get-WmiObject win32_service | Where-Object {$_.PathName -like "*$PathName*"}).Name
+if ($null -ne $CustomServiceName) {
+    try {
+        Write-Log -message "Actioning service $($CustomServiceName)" -Level Info
+        Set-Service -Name $CustomServiceName -StartupType Automatic -ErrorAction Stop
+        Start-Service -Name $CustomServiceName -ErrorAction Stop
+        Write-Log -message  "Success" Level Info
+    }
+    catch {
+        Write-Log -Message $_ -Level Warn
+        Write-Log -Message "Failed to start service $($CustomServiceName)" -Level Warn
+    }
+} else {
+    Write-Log -Message "No services found" -Level Warn
+}
 
 #endregion
