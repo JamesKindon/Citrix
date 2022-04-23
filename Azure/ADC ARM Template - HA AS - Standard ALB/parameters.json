@@ -48,13 +48,13 @@
             "value": "VNET-AE-Kindon"
         },
         "acceleratedNetworkingManagement": {
-            "value": true
+            "value": false
         },
         "acceleratedNetworkingClient": {
-            "value": true
+            "value": false
         },
         "acceleratedNetworkingServer": {
-            "value": true
+            "value": false
         },
         "vnetResourceGroup": {
             "value": "RG-AE-General"
