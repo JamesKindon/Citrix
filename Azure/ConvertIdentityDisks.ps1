@@ -20,6 +20,10 @@ Param(
     [string]$isAzureRunbook = "true", #Set to true if using an Azure Runbook, this will move the authentication model to the Automation Account
 
     [Parameter(Mandatory = $false)]
+    [ValidateSet("SystemIdentity","RunAs")]
+    [string]$RunBookAuthModel = "SystemIdentity", #try to avoind using runas accounts as per Microsoft updated guidance. Use a system managed identity instead
+
+    [Parameter(Mandatory = $false)]
     [string]$DiskNameFilter = "*-IdentityDisk-*", #Disk name filter to match
     
     [Parameter(Mandatory = $false)]
@@ -162,8 +166,14 @@ $Global:TotalFailCount = 0 #Total fail count across all Subscriptions
 $Global:TotalUnattachedDiskCount = 0 #Total number of unattached disks 
 $Global:TotalAttachedDiskCount = 0 #Total number of attached disks
 
+
+#region Authentication
 # Check to see if flagged as a runbook, if true, process accordingly
-if ($isAzureRunbook -eq "true") {
+
+#----------------------------------------------------------------------------
+# Handle Authentication - Runbook legacy, Modern or none
+#----------------------------------------------------------------------------
+if ($isAzureRunbook -eq "true" -and $RunBookAuthModel -eq "RunAs") {
     # https://docs.microsoft.com/en-us/azure/automation/learn/automation-tutorial-runbook-textual-powershell#step-5---add-authentication-to-manage-azure-resources
     # Ensures you do not inherit an AzContext in your runbook
     Disable-AzContextAutosave –Scope Process
@@ -195,8 +205,37 @@ if ($isAzureRunbook -eq "true") {
             Write-Error -Message $_.Exception
             throw $_.Exception
         }
-    }    
+    }  
 }
+elseif ($isAzureRunbook -eq "true" -and $RunBookAuthModel -eq "SystemIdentity") {
+    try {
+        Write-Output "Logging in to Azure..."
+        #https://docs.microsoft.com/en-us/azure/automation/enable-managed-identity-for-automation#authenticate-access-with-system-assigned-managed-identity
+        # Ensures you do not inherit an AzContext in your runbook
+        Disable-AzContextAutosave -Scope Process
+    
+        # Connect to Azure with system-assigned managed identity
+        $AzureContext = (Connect-AzAccount -Identity).context
+    
+        # set and store context
+        $AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext -ErrorAction Stop
+    
+        Write-Output "Authenticated"
+    }
+    catch {
+        Write-Warning $_
+        Write-Warning "Failed to Authenticate. Exit Script."
+        Exit 1
+    }
+}
+else {
+    # Check for Auth 
+    $AuthTest = Get-AzSubscription -ErrorAction SilentlyContinue
+    if (-not($AuthTest)) {
+        Connect-AzAccount
+    }
+}
+#endregion
 
 # loop through subscriptions
 foreach ($Subscription in $SubscriptionList) {
