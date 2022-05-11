@@ -23,7 +23,7 @@ Param(
 
     [Parameter(Mandatory = $false)]
     [ValidateSet("SystemIdentity","RunAs")]
-    [string]$RunBookAuthModel = "SystemIdentity", #try to avoind using runas accounts as per Microsoft updated guidance. Use a system managed identity instead
+    [string]$RunBookAuthModel = "SystemIdentity", #try to avoid using runas accounts as per Microsoft updated guidance. Use a system managed identity instead
 
     [Parameter(Mandatory = $false)]
     [Array]$ResourceGroups = ("RG-TBD1","RG-TBD2"), #Array of Resource Groups to query

@@ -21,7 +21,7 @@ Param(
 
     [Parameter(Mandatory = $false)]
     [ValidateSet("SystemIdentity","RunAs")]
-    [string]$RunBookAuthModel = "SystemIdentity", #try to avoind using runas accounts as per Microsoft updated guidance. Use a system managed identity instead
+    [string]$RunBookAuthModel = "SystemIdentity", #try to avoid using runas accounts as per Microsoft updated guidance. Use a system managed identity instead
 
     [Parameter(Mandatory = $false)]
     [string]$DiskNameFilter = "*-IdentityDisk-*", #Disk name filter to match
