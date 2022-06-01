@@ -31,6 +31,8 @@ The following example specifies Citrix Cloud as the export location and thus cal
 
 .NOTES
 
+02.06.22 - Added icon handling on export. Defaults the output of icons to $PSScriptRoot\Resources\Icons. This output is required for import. 
+
 .LINK
 #>
 
@@ -41,6 +43,9 @@ Param (
 
     [Parameter(Mandatory = $False)]
     [String] $OutputLocation = $null,
+
+    [Parameter(Mandatory = $False)]
+    [String] $IconOutput = "$PSScriptRoot\Resources\Icons",
 
     [Parameter(Mandatory = $False)]
     [Switch] $Cloud
@@ -80,6 +85,12 @@ function GetAppsFromDeliveryGroup {
 
                 foreach ($app in $apps) {
                     Write-Verbose "Processing Application $StartCount ($($App.PublishedName)) of $Count" -Verbose
+
+                    #Handle Icon Export Path
+                    if (-not(Test-Path -Path "$IconOutput/$($app.IconUid).txt")) {
+                        (Get-Brokericon -Uid $app.IconUid).EncodedIconData | Out-File "$IconOutput/$($app.IconUid).txt"
+                    }
+
                     # Builds Properties for each application ready for export
                     $Properties = @{
                         AdminFolderName                  = $app.AdminFolderName
@@ -178,6 +189,12 @@ if ($Cloud.IsPresent) {
 
 Write-Verbose "Start Logging" -Verbose
 Start-Transcript $LogPS | Out-Null
+
+#Check if resources folder exists (to store icon)
+Write-Verbose "Icon output path is $($IconOutput)" -Verbose
+if (-not(Test-Path -Path $IconOutput)) {
+    New-Item -Path $IconOutput -ItemType Directory -Force | Out-Null
+}
 
 if (!($DeliveryGroup)) {
     Write-Verbose "No Delivery Group Sepcified. Processing all Delivery Groups" -Verbose

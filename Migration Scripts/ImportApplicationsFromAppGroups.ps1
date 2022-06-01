@@ -28,12 +28,18 @@ Use corresponding export scripts to achieve appropriate export
 https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/MigrateAppFolderStructure.ps1
 https://github.com/JamesKindon/Citrix/blob/master/Migration%20Scripts/ImportAppGroups.ps1
 
+02.06.22 - Added icon handling on import. Defaults the output of icons to $PSScriptRoot\Resources\Icons. This output is required for import. 
+
 .LINK
 #>
 
 
 [CmdletBinding()]
 Param (
+
+    [Parameter(Mandatory = $False)]
+    [String] $IconSource = "$PSScriptRoot\Resources\Icons",
+
     [Parameter(Mandatory = $False)]
     [Switch] $Cloud
 )
@@ -144,6 +150,15 @@ if ($Cloud.IsPresent) {
 Write-Verbose "Start Logging" -Verbose
 Start-Transcript $LogPS | Out-Null
 
+#Check if resources folder exists (to import icons)
+Write-Verbose "Checking icon resources folder" -Verbose
+if (Test-Path -Path $IconSource) {
+    Write-Verbose "Icon resources located" -verbose
+} else {
+    Write-Warning "No icon resources found - please ensure icons exported are located at: $($IconSource)"
+    Exit 1
+}
+
 # If Not Manually set, prompt for variable configurations
 if ($null -eq $Apps) {
     Write-Verbose "Please Select an XML Import File" -Verbose
@@ -220,7 +235,14 @@ foreach ($App in $Apps) {
                 }
                 $MakeApp += ' -ApplicationGroup $AG.Name' #Use the last AppGroup Defined in the array
             }
-            ########            
+            ########
+            
+            #handle Icons
+            $IconPath = $IconSource + "\" + $app.iconuid + ".txt"
+            Write-Verbose "Setting Icon from $($IconPath)" -Verbose
+            $EncodedData = Get-Content $IconPath
+            $Icon = New-BrokerIcon -EncodedIconData $EncodedData
+            if ($null -ne $app.iconuid) { $MakeApp += ' -IconUid $Icon.Uid' }
 
             #Creating Application
             $Results = Invoke-Expression $MakeApp | out-string -Stream
@@ -242,7 +264,7 @@ foreach ($App in $Apps) {
 
         if ($failed -ne $true) {
             # Set Application Icons
-            ImportandSetIcon
+            #ImportandSetIcon
 
             # Adding Users and Groups to application associations
             If ($null -ne $app.AssociatedUserNames) {

@@ -28,6 +28,8 @@ The following example specifies Citrix Cloud as the import location and thus cal
 Export required from existing delivery group
 Use corresponding export script to achieve appropriate export
 
+02.06.22 - Added icon handling on import. Defaults the output of icons to $PSScriptRoot\Resources\Icons. This output is required for import. 
+
 .LINK
 #>
 
@@ -36,6 +38,9 @@ Use corresponding export script to achieve appropriate export
 Param (
     [Parameter(Mandatory = $False)]
     [String] $DeliveryGroup = $null,
+
+    [Parameter(Mandatory = $False)]
+    [String] $IconSource = "$PSScriptRoot\Resources\Icons",
 
     [Parameter(Mandatory = $False)]
     [Switch] $Cloud
@@ -130,6 +135,15 @@ if ($Cloud.IsPresent) {
 Write-Verbose "Start Logging" -Verbose
 Start-Transcript $LogPS | Out-Null
 
+#Check if resources folder exists (to import icons)
+Write-Verbose "Checking icon resources folder" -Verbose
+if (Test-Path -Path $IconSource) {
+    Write-Verbose "Icon resources located" -verbose
+} else {
+    Write-Warning "No icon resources found - please ensure icons exported are located at: $($IconSource)"
+    Exit 1
+}
+
 # If Not Manually set, prompt for variable configurations
 if ($null -eq $Apps) {
     Write-Verbose "Please Select an XML Import File" -Verbose
@@ -204,6 +218,13 @@ foreach ($App in $Apps) {
             if ($app.UserFilterEnabled -eq "True") { $MakeApp += ' -UserFilterEnabled $app.UserFilterEnabled' }
             if ($null -ne $DelGroup) { $MakeApp += ' -DesktopGroup $DelGroup' }
 
+            #handle Icons
+            $IconPath = $IconSource + "\" + $app.iconuid + ".txt"
+            Write-Verbose "Setting Icon from $($IconPath)" -Verbose
+            $EncodedData = Get-Content $IconPath
+            $Icon = New-BrokerIcon -EncodedIconData $EncodedData
+            if ($null -ne $app.iconuid) { $MakeApp += ' -IconUid $Icon.Uid' }
+
             #Creating Application
             $Results = Invoke-Expression $MakeApp | out-string -Stream
             $Results = $Results[16] -replace '^[^:]+:', ''
@@ -223,7 +244,7 @@ foreach ($App in $Apps) {
 
         if ($failed -ne $true) {
             # Set Application Icons
-            ImportandSetIcon
+            #ImportandSetIcon
 
             # Adding Users and Groups to application associations
             If ($null -ne $app.AssociatedUserNames) {
