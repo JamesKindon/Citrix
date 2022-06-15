@@ -1,3 +1,5 @@
+#$StartDate = "2022-05-25"
+$StartTime = "01:00:00"
 $Days = @("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday") # Array of days to create schedules for
 $DesktopGroupNames = @("") # Array of Delivery Groups to create schedules for
 
