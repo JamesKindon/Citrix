@@ -30,7 +30,7 @@ PS C:\> .\EnableSSL.ps1 -EnableSSL -DisableHTTP
 The above example will prompt for a certificate, and once selected will create the apporopriate SSL binding. It will also disable answering XML requests on HTTP
 
 PS C:\> .\EnableSSL.ps1 -DisableHTTP
-The abvoe example will Disable answering XML requests on HTTP
+The above example will Disable answering XML requests on HTTP
 
 PS C:\> .\EnableSSL.ps1 -DisableSSL
 The above example will delete the SSL bindings, and enforce HTTP so that the Cloud Connector or Broker isn't left useless
