@@ -413,7 +413,7 @@ function GetUpdatedCatalogAccountIdentityPool  {
     }
     catch {
         Write-Log -Message $_ -Level Warn
-        Write-Log -Messagae "$($SourceCatalog): Cannot get updated associated identity Pool information " -Level Warn
+        Write-Log -Message "$($SourceCatalog): Cannot get updated associated identity Pool information " -Level Warn
         Break
     }
     
