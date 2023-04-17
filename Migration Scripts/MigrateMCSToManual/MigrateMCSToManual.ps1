@@ -254,8 +254,10 @@ function AddUsertoVM {
 }
 
 function SetVMDisplayName {
+    [Parameter(Mandatory = $true)]
+    [String]$PublishedName
     #Need to think about this more and compare with Delivery GroupName
-    if ($null -ne $PublishedName) {
+    if ($PublishedName -ne "") {
         Write-Log -Message "$($VM.MachineName): Setting Published Name to $PublishedName" -Level Info
         try {
             Set-BrokerMachine -MachineName $VM.MachineName -PublishedName $PublishedName -Verbose -ErrorAction Stop
@@ -550,15 +552,15 @@ foreach ($VM in $VMs) {
         AddUsertoVM
         if ($OverridePublishedName.IsPresent) {
             $PublishedName = $PublishedName
-            SetVMDisplayName
+            SetVMDisplayName -PublishedName $PublishedName
         }
         if ($SetPublishedNameToMachineName.IsPresent) {
             $PublishedName = ($VM.MachineName | Split-Path -leaf)
-            SetVMDisplayName
+            SetVMDisplayName -PublishedName $PublishedName
         }
         else {
             $PublishedName = $VM.PublishedName
-            SetVMDisplayName
+            SetVMDisplayName -PublishedName $PublishedName
         }
         $StartCount += 1
     }
