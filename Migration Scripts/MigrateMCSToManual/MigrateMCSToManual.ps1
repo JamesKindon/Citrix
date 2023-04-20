@@ -221,9 +221,9 @@ function AddVMtoCatalog {
 function AddVMtoDeliveryGroup {
     $DG = (Get-BrokerMachine -MachineName $VM.MachineName).DesktopGroupName
     if ($null -eq $DG) {
-        Write-Log -Message "$($VM.MachineName): Adding to Delivery Group $($DeliveryGroup.Name)" -Level Info
+        Write-Log -Message "$($VM.MachineName): Adding to Delivery Group $($TargetDeliveryGroup)" -Level Info
         try {
-            Add-BrokerMachine -MachineName $VM.MachineName -DesktopGroup $DeliveryGroup.Name -Verbose -ErrorAction Stop
+            Add-BrokerMachine -MachineName $VM.MachineName -DesktopGroup $TargetDeliveryGroup -Verbose -ErrorAction Stop
         }
         catch {
             Write-Log -Message $_ -Level Warn
