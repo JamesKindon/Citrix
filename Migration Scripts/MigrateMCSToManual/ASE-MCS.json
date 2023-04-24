@@ -1,6 +1,11 @@
 {
+    "Controller": "localhost",
     "SourceCatalog": "Kindon-Azure-SouthEastAsia-Dedicated-MCS",
     "TargetCatalog": "Kindon-Azure-SouthEastAsia-Dedicated",
+    "SourceDeliveryGroup": "Kindon-Azure-ASR-Failover-MCS",
     "TargetDeliveryGroup": "Kindon-Azure-ASR-Failover",
-    "PublishedName": ""
+    "OverridePublishedName": "NewDesktopName",
+    "TargetMachineScope": "MachineList",
+    "TargetMachineList": "VM-010,VM-011",
+    "TargetMachineCSVList": ""
 }
