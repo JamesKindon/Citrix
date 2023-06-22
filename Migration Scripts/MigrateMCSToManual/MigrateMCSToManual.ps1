@@ -64,6 +64,7 @@
         [18.04.23, James Kindon] Moved OverridePublishedName to string from switch. Removed PublishedName Param
         [18.04.23, James Kindon] Altered JSON inputs to capture SourceDeliveryGroup, Controller, OverridePublishedName, TargetMachineScope, TargetMachineList, TargetMachineCSVList
         [18.04.23, James Kindon] Updated Parameter Sets and added code logic to deal with awkward param combinations failing on sets (region Error Handling)
+        [22.06.23, James Kindon] Added success logging output and ErrorAction Stop to remove loop
 #>
 
 #region Params
@@ -254,6 +255,7 @@ function AddVMtoCatalog {
         Write-Log -Message "$($VM.MachineName): Adding to Catalog $($NewCatalog.Name)" -Level Info
         try {
             $null = New-BrokerMachine -CatalogUid $NewCatalog.Uid -HostedMachineId $VM.HostedMachineId -HypervisorConnectionUid $VM.HypervisorConnectionUid -MachineName $VM.SID -AdminAddress $Controller -Verbose -ErrorAction Stop
+            Write-Log -Message "$($VM.MachineName): Successfully added to Catalog $($NewCatalog.Name)" -Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn
@@ -271,6 +273,7 @@ function AddVMtoDeliveryGroup {
         Write-Log -Message "$($VM.MachineName): Adding to Delivery Group $($TargetDeliveryGroup)" -Level Info
         try {
             Add-BrokerMachine -MachineName $VM.MachineName -DesktopGroup $TargetDeliveryGroup -AdminAddress $Controller -Verbose -ErrorAction Stop
+            Write-Log -Message "$($VM.MachineName): Sucessfully added to Delivery Group $($TargetDeliveryGroup)" -Level Info
         }
         catch {
             Write-Log -Message $_ -Level Warn
@@ -289,6 +292,7 @@ function AddUsertoVM {
             Write-Log -Message "$($VM.MachineName): Adding $($User)" -Level Info
             try {
                 Add-BrokerUser $User -PrivateDesktop $VM.MachineName -AdminAddress $Controller -Verbose -ErrorAction Stop
+                Write-Log -Message "$($VM.MachineName): Successfully processed User Assignment for $($User)" -Level Info
             }
             catch {
                 Write-Log -Message $_ -Level Warn
@@ -305,6 +309,7 @@ function SetVMDisplayName {
         Write-Log -Message "$($VM.MachineName): Setting Published Name to: $PublishedName" -Level Info
         try {
             Set-BrokerMachine -MachineName $VM.MachineName -PublishedName $PublishedName -AdminAddress $Controller -Verbose -ErrorAction Stop
+            Write-Log -Message "$($VM.MachineName): Successfully set Published Name to: $PublishedName" -Level Info
         }
         catch {
             Write-Log -Message $_ -level Warn
@@ -452,7 +457,8 @@ function RemoveMCSProvisionedMachine {
     # Set Maintenance Mode
     try {
         Write-Log -Message "$($VM.MachineName): Setting Maintenance Mode to On" -Level Info
-        Set-BrokerMachine -MachineName $VM.MachineName -InMaintenanceMode $true -AdminAddress $Controller
+        Set-BrokerMachine -MachineName $VM.MachineName -InMaintenanceMode $true -AdminAddress $Controller -ErrorAction Stop
+        Write-Log -Message "$($VM.MachineName): Successfully set Maintenance Mode to On" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -462,7 +468,8 @@ function RemoveMCSProvisionedMachine {
     try {
         if ($VM.DesktopGroupName) {
             Write-Log -Message "$($VM.MachineName): Removing from Delivery Group $($VM.DesktopGroupName)" -Level Info
-            Remove-BrokerMachine -MachineName $VM.MachineName -DesktopGroup $VM.DesktopGroupName -force -AdminAddress $Controller   
+            Remove-BrokerMachine -MachineName $VM.MachineName -DesktopGroup $VM.DesktopGroupName -force -AdminAddress $Controller -ErrorAction Stop
+            Write-Log -Message "$($VM.MachineName): Successfully removed from Delivery Group $($VM.DesktopGroupName)" -Level Info 
         }
     }
     catch {
@@ -474,7 +481,8 @@ function RemoveMCSProvisionedMachine {
     $ProvVM = (get-provvm -VMName ($VM.MachineName | Split-Path -Leaf))
     try {
         Write-Log -Message "$($VM.MachineName): Unlocking ProvVM Account" -Level Info
-        Unlock-ProvVM -VMID $ProvVM.VMId -ProvisioningSchemeName $VM.CatalogName -AdminAddress $Controller
+        Unlock-ProvVM -VMID $ProvVM.VMId -ProvisioningSchemeName $VM.CatalogName -AdminAddress $Controller -ErrorAction Stop
+        Write-Log -Message "$($VM.MachineName): Successfully unlocked ProvVM Account" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -483,7 +491,8 @@ function RemoveMCSProvisionedMachine {
     # RemoveProvVM
     try {
         Write-Log -Message "$($VM.MachineName): Removing ProvVM but keeping VM" -Level Info
-        $null = remove-ProvVM -VMName $ProvVM.VMName -ProvisioningSchemeName $VM.CatalogName -ForgetVM -AdminAddress $Controller
+        $null = remove-ProvVM -VMName $ProvVM.VMName -ProvisioningSchemeName $VM.CatalogName -ForgetVM -AdminAddress $Controller -ErrorAction Stop
+        Write-Log -Message "$($VM.MachineName): Successfully removed ProvVM $($ProvVM.VMName)" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -492,7 +501,8 @@ function RemoveMCSProvisionedMachine {
     # remove account from machine catalog
     try {
         Write-Log -Message "$($VM.MachineName): Removing Account from Machine Catalog $($VM.CatalogName)" -Level Info
-        $null = Remove-AcctADAccount -IdentityPoolName $VM.CatalogName -ADAccountSid $ProvVM.ADAccountSid -RemovalOption None -AdminAddress $Controller
+        $null = Remove-AcctADAccount -IdentityPoolName $VM.CatalogName -ADAccountSid $ProvVM.ADAccountSid -RemovalOption None -AdminAddress $Controller -ErrorAction Stop
+        Write-Log -Message "$($VM.MachineName): Successfully removed Account from Machine Catalog $($VM.CatalogName)" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -501,7 +511,8 @@ function RemoveMCSProvisionedMachine {
     # remove BrokerMachine
     try {
         Write-Log -Message "$($VM.MachineName): Removing VM from Machine Catalog $($VM.CatalogName)" -Level Info
-        remove-BrokerMachine -MachineName $VM.MachineName -AdminAddress $Controller
+        remove-BrokerMachine -MachineName $VM.MachineName -AdminAddress $Controller -ErrorAction Stop
+        Write-Log -Message "$($VM.MachineName): Successfully removed VM from Machine Catalog $($VM.CatalogName)" -Level Info
     }
     catch {
         Write-Log -Message $_ -Level Warn
@@ -525,6 +536,7 @@ function GetCatalogAccountIdentityPool {
 }
 
 function GetUpdatedCatalogAccountIdentityPool  {
+    Write-Log -Message "Source Catalog: $($SourceCatalog) getting updated associated identity Pool information" -Level Info
     $UpdatedIdentityPool = try { #get details about the Identity Pool
         Get-AcctIdentityPool -IdentityPoolName $SourceCatalog -AdminAddress $Controller -ErrorAction Stop
     }
@@ -542,6 +554,9 @@ function GetUpdatedCatalogAccountIdentityPool  {
         catch {
             Write-Log -Message $_ -Level Warn
         }
+    }
+    else {
+        Write-Log -Message "Identity Pool: $($UpdatedIdentityPool.IdentityPoolName) is set to $($UpdatedIdentityPool.OU)" -Level Info
     }
 }
 #endregion
@@ -759,7 +774,11 @@ else {
 foreach ($VM in $VMs) {
     if ($VM.ProvisioningType -eq "MCS") {
         Write-Log -Message "Processing machine $StartCount of $Count" -Level Info
+
+        Write-Log -Message "$($VM.MachineName): Processing removal tasks" -Level Info
         RemoveMCSProvisionedMachine
+
+        Write-Log -Message "$($VM.MachineName): Processing addition tasks" -Level Info
         AddVMToCatalog
         AddVMtoDeliveryGroup
         AddUsertoVM
