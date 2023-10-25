@@ -179,6 +179,6 @@ The script will:
 
 If you are using a newer version of the Citrix PowerShell Snapins than your site is currently running, the -ForgetVM switch may not operate as documented, and the VM entity will be removed/deleted (yes deleted) from the hypervisor.
 
-This has been validated as a bug in scenarios such as Site Version: `2203 LTSR` and Studio/PowerShell Version `2305` on a remote server. It is wise to keep operations at a similar version.
+This has been validated as a bug in scenarios such as Site Version: `2203 LTSR` and Studio/PowerShell Version `2305` on a remote server. It is wise to keep operational components at a similar version.
 
 Test before executing production workloads (scope with a `MachineList` specific command set)
