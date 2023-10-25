@@ -4,7 +4,7 @@
 
 The script is designed to move a dedicated single-session machines from one CVAD site to Citrix Cloud DaaS.
 
-If you want to move machines from a Citrix Site to Citrix Site, see this [Script instead]()
+If you want to move machines from a Citrix Site to Citrix Site, see this [Script instead](https://github.com/JamesKindon/Citrix/tree/master/Migration%20Scripts/MigrateDedicatedMachines/MigratedDedicatedVM)
 
 ## Technical requirements for running the script
 
