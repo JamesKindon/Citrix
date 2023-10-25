@@ -1,4 +1,4 @@
-# Migrate Citrix Dedicated Machine to New Site
+# Migrate Citrix Dedicated Machine to Citrix DaaS
 
 ## Objective
 
